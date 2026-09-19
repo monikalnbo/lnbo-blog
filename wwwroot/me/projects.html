@@ -13,17 +13,7 @@
 <body>
 <div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
 
-<nav id="subnav">
-  <span class="crumb">lnbo@server:<b>~/me/</b></span>
-  <a href="/me/">总览</a>
-  <a href="/me/about.html">关于</a>
-  <a href="/me/skills.html">技能</a>
-  <a class="on" href="/me/projects.html">项目</a>
-  <a href="/me/links.html">链接</a>
-  <a href="/me/logs.html">日志</a>
-  <a href="/me/kaf.html">花譜</a>
-  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
-</nav>
+<nav id="subnav" data-page="projects"></nav>
 
 <div class="wrap">
 
@@ -132,14 +122,6 @@
   <p>© 2026 Lnbo</p>
 </footer>
 
-<script>
-(function(){
-  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
-  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
-  var prog=document.getElementById('prog');
-  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
-    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
-})();
-</script>
+<script src="/assets/js/core.js?v=1"></script>
 </body>
 </html>
