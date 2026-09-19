@@ -37,7 +37,7 @@ nginx -t 2>/dev/null || true
 
 echo "── 2/5 拷贝文件"
 mkdir -p "$WEBROOT" /opt/lnbo-blog /www/wwwlogs
-rm -rf "$WEBROOT/blog"; cp -r "$SRC/site" "$WEBROOT/blog"
+rm -rf "$WEBROOT/blog"; cp -r "$SRC/wwwroot/." "$WEBROOT/"   # 个人页 + blog/ 一起拷入
 # 保留已有数据库(重复部署不丢用户/评论数据)
 BK=""
 [ -f /opt/lnbo-blog/api/blog.db ] && { BK=/opt/lnbo-blog/api/blog.db.bak.$(date +%s); mv /opt/lnbo-blog/api/blog.db "$BK"; }

@@ -10,7 +10,8 @@
 浏览器
   │  HTML/CSS/JS(无构建、无框架)
   ▼
-nginx ──┬── /blog/      静态文件(site/)
+nginx ──┬── /  /me.html  个人页 + 导航页 + 404(wwwroot/ 静态文件)
+        ├── /blog/      博客静态页(wwwroot/blog/)
         ├── /api/       ──► blog-api.service   (api.py,127.0.0.1:9540)
         │                     │  SQLite 持久化(用户/红心/收藏/评论)
         │                     │  热点读走缓存 ↓
@@ -30,10 +31,15 @@ nginx ──┬── /blog/      静态文件(site/)
 ## 仓库结构
 
 ```
-site/                    # 静态站点(部署到 <webroot>/blog)
-  index.html  about.html  login.html  stats.html  feed.xml
-  posts/*.html           # 文章(带模板写法,见「写文章」)
-  assets/                # style.css / enhance.js / interact.js / analytics.js / ai-ask.js
+wwwroot/                 # ← 整个拷到服务器站点根(nginx root,默认 /www/wwwroot/site)
+  index.html            # 服务器导航页(卡片指向本机各服务,新服务器需按需增删)
+  me.html               # 个人主页
+  404.html  robots.txt  sitemap.xml
+  css/  vendor/         # 个人页样式与前端库(离线自带,无 CDN 依赖)
+  blog/                 # 博客(部署后访问 /blog/)
+    index.html  about.html  login.html  stats.html  feed.xml
+    posts/*.html        # 文章(带模板写法,见「写文章」)
+    assets/             # style.css / enhance.js / interact.js / analytics.js / ai-ask.js
 api/
   api.py                 # 交互 API(默认 127.0.0.1:9540)
   cache-server.py        # 自写缓存服务端(默认 127.0.0.1:6379)
@@ -46,6 +52,8 @@ deploy/
   blog-cache.service     # systemd 单元:缓存服务
   nginx-blog.conf        # nginx 配置模板(setup.sh 会自动生成)
 ```
+
+> 大文件资源不在仓库:原站的 `mods/`(Minecraft 模组)、`video/`(视频)目录与页面无代码依赖,迁移时用 scp/rsync 单独拷到 `$WEBROOT` 下即可;导航页 `index.html` 上的卡片链接(下载站/棋牌/noVNC 等)指向原服务器配套服务,新环境自行修改。
 
 ---
 
@@ -71,7 +79,7 @@ HTTPS:`certbot --nginx -d blog.example.com`(或参考 `deploy/nginx-blog.conf` �
 ```bash
 # 1. 文件就位
 mkdir -p /www/wwwroot/site /opt/lnbo-blog /www/wwwlogs
-cp -r site /www/wwwroot/site/blog          # 静态站
+cp -r wwwroot/. /www/wwwroot/site/         # 个人页 + 导航页 + blog/
 cp -r api  /opt/lnbo-blog/api              # 后端 + 缓存
 
 # 2. systemd 服务
@@ -97,8 +105,8 @@ curl -I http://127.0.0.1/blog/              # 200
 
 ## 方式 C:纯静态托管(无后端)
 
-只把 `site/` 目录扔到任意静态托管(nginx / GitHub Pages / OSS / CDN)即可,博客正文完全可读。
-**会失效的功能**:红心、收藏、评论、登录、统计页数据、AI 问答(前端会自动隐藏这些模块,不会报错)。
+只把 `wwwroot/` 目录扔到任意静态托管(nginx / GitHub Pages / OSS / CDN)即可:个人主页 `/me.html`、导航页、博客正文完全可读。
+**会失效的功能**:红心、收藏、评论、登录、统计页数据、AI 问答(前端会自动隐藏这些模块,不会报错)。另外 `index.html` 导航卡片指向原服务器的配套服务(下载站/棋牌/noVNC 等),新环境请自行增删卡片。
 
 ## 环境变量(blog-api.service)
 

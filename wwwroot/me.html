@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lnbo · 个人主页</title>
+<meta name="description" content="Lnbo — 独立开发者 · AI 工程化与自动化 · 自托管体系 · 観測者">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+</head>
+<body>
+<div id="app" v-cloak>
+
+  <!-- 氛围层 -->
+  <div id="amb"></div>
+  <canvas id="rain"></canvas>
+  <div id="spot"></div>
+  <div id="grain"></div>
+  <div id="beam"></div>
+  <div id="scan"></div>
+  <div id="vig"></div>
+  <div id="prog" :style="{width:prog+'%'}"></div>
+
+  <!-- 开机序列 -->
+  <div id="boot" v-if="booting" @click="skipBoot">
+    <div v-for="l in bootLines" :key="l.id" :class="l.cls">{{ l.t }}</div>
+    <span class="skip">click 跳过</span>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ============ HERO ============ -->
+    <header class="hero" id="s-main">
+      <div class="hero-grid">
+        <div class="hero-l">
+          <div class="svc"><span class="dot"></span>在线 · Lnbo · 欢迎访问</div>
+          <h1 class="name" ref="nameEl">Lnbo</h1>
+          <p class="tagline">独立开发者 · AI 工程化与自动化 · 一名観測者<span class="cur"></span></p>
+          <div class="cta">
+            <a class="btn" href="/blog/" target="_blank" rel="noopener">访问博客 ↗</a>
+            <button class="btn ghost" @click="goWin('s-tty')">打开终端 ↓</button>
+          </div>
+        </div>
+        <div class="hero-r">
+          <div class="card" data-tilt>
+            <h3>$ systemctl status homepage</h3>
+            <div style="display:flex;gap:8px;margin-bottom:12px"><span class="dot"></span><b style="color:var(--text)">homepage.service</b><span style="color:var(--muted)">— Lnbo · 个人主页</span></div>
+            <div class="st-line"><span class="k">Loaded:</span><span class="v">loaded (/etc/systemd/system/homepage.service; <span class="a">enabled</span>)</span></div>
+            <div class="st-line"><span class="k">Active:</span><span class="v g">active (running)</span><span style="color:var(--dim)">&nbsp;since 2026-08-17 22:07:24</span></div>
+            <div class="st-line"><span class="k">Uptime:</span><span class="v a">{{ uptime }}</span></div>
+            <div class="st-line"><span class="k">Docs:</span><span class="v">blog → <a href="/blog/" target="_blank" rel="noopener">/blog</a></span></div>
+            <div class="st-line"><span class="k">Collab:</span><span class="v">pi · codex · hermes <span style="color:var(--muted)">（与 Agent 协作）</span></span></div>
+            <div class="st-line"><span class="k">Status:</span><span class="v q">"<span id="statusmsg"></span>"</span></div>
+          </div>
+          <div class="card" data-tilt>
+            <h3>$ top — agents 实时负载</h3>
+            <div class="chartbox"><canvas ref="chartEl"></canvas></div>
+            <table class="top-tbl">
+              <thead><tr><td>PID</td><td>COMMAND</td><td style="text-align:right">%CPU</td></tr></thead>
+              <tbody>
+                <tr v-for="p in procs" :key="p.pid">
+                  <td>{{ p.pid }}</td><td class="cmd">{{ p.cmd }}</td>
+                  <td class="cpu" :class="{inf:p.inf}">{{ p.cpu }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============ 双栏代码流 ============ -->
+    <section class="tui rv" id="s-code">
+      <span class="lbl">— $ tail -f <b>本页源码</b> ‖ <b>我的仓库</b></span>
+      <div class="cs" ref="csEl">
+        <div class="pane">
+          <div class="pane-h"><span class="fname">~/site/index.html</span><span class="live">LIVE</span></div>
+          <div class="pane-b" ref="paneAEl"></div>
+        </div>
+        <div class="pane">
+          <div class="pane-h">
+            <span class="fname" style="margin-right:2px">~/repo/</span>
+            <button v-for="(f,i) in files" :key="f.name" class="tabbtn" :class="{on:i===fileIdx}" @click="loadFile(i)">{{ f.name }}</button>
+            <span class="live">LIVE</span>
+          </div>
+          <div class="pane-b" ref="paneBEl"></div>
+        </div>
+      </div>
+      <div class="cs-foot">
+        <span>左栏：本页真实源码（运行时抓取 —— 代码展示自身）</span>
+        <span class="k">悬停加速 · 静止常速</span>
+      </div>
+    </section>
+
+    <!-- ============ whoami ============ -->
+    <section class="tui rv" id="s-whoami">
+      <span class="lbl">— $ cat ~/about.md</span>
+      <div class="prose">
+        <p>我是 <b>Lnbo</b>，独立开发者，专注于 <span class="hl">AI 工程化与自动化实践</span>。长期与 AI Agent 协同工作：我负责需求定义、任务拆解与质量验收，Agent 负责具体实现，让想法从提出到上线的周期尽可能短。</p>
+        <p>独立运营自托管服务器体系，涵盖博客、知识库、剪藏引擎与消息自动化；重视<span class="hl">数据自主</span>，习惯把核心工具掌握在自己手里。</p>
+        <p>工作之外，我是一名<span class="hl">観測者</span> —— 这是虚拟歌手花譜给粉丝的名字。就像这台服务器被持续观测，我也在安静地观测一位歌手的轨迹。</p>
+        <p class="sig">Lnbo · 持续构建，持续观测。</p>
+      </div>
+    </section>
+
+    <!-- ============ 技能 ============ -->
+    <section class="tui rv" id="s-units">
+      <span class="lbl">— $ systemctl --user list-units</span>
+      <div class="units">
+        <div class="u-row"><span>UNIT</span><span>ACTIVE</span><span>SUB</span><span>DESCRIPTION</span></div>
+        <div class="u-row rv-row" v-for="u in units" :key="u.name">
+          <span class="u-name">{{ u.base }}<span class="ext">{{ u.ext }}</span></span>
+          <span class="u-act">{{ u.active }}</span><span class="u-sub">{{ u.sub }}</span>
+          <span class="u-desc">{{ u.desc }}</span>
+        </div>
+      </div>
+      <div class="u-foot">以上单元均在稳定运行中。</div>
+    </section>
+
+    <!-- ============ projects ============ -->
+    <section class="tui rv" id="s-proj">
+      <span class="lbl">— $ ls -la ~/projects/</span>
+      <div class="ls">
+        <div class="ls-row"><span>PERMS</span><span>NAME</span><span>DESCRIPTION</span><span></span></div>
+        <template v-for="p in projects" :key="p.name">
+          <a v-if="p.href" class="ls-row rv-row" :href="p.href" target="_blank" rel="noopener">
+            <span class="ls-perm">{{ p.perm }}</span><span class="ls-name" :class="{dir:p.dir}">{{ p.name }}</span>
+            <span class="ls-desc">{{ p.desc }}</span><span class="ls-arr">{{ p.lock ? '🔒' : '↗' }}</span>
+          </a>
+          <div v-else class="ls-row rv-row">
+            <span class="ls-perm">{{ p.perm }}</span><span class="ls-name" :class="{dir:p.dir}">{{ p.name }}</span>
+            <span class="ls-desc">{{ p.desc }}</span><span class="ls-arr" style="color:var(--dimmer)">{{ p.lock ? '🔒' : '←' }}</span>
+          </div>
+        </template>
+      </div>
+    </section>
+
+    <!-- ============ links ============ -->
+    <section class="tui rv" id="s-links">
+      <span class="lbl">— $ cat ~/links.txt</span>
+      <div class="links">
+        <a v-for="l in links" :key="l.name" class="lk-card rv-row" :href="l.href" target="_blank" rel="noopener">
+          <span class="lk-ic">{{ l.icon }}</span>
+          <span class="lk-name">{{ l.name }}</span>
+          <span class="lk-handle">{{ l.handle }}</span>
+          <span class="lk-desc">{{ l.desc }}</span>
+          <span class="lk-go">open ↗</span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============ journalctl ============ -->
+    <section class="tui rv" id="s-logs">
+      <span class="lbl">— $ journalctl -u homepage --no-pager</span>
+      <div class="jrn">
+        <div class="j-line rv-row" v-for="j in journal" :key="j.t">
+          <span class="j-time">{{ j.time }}</span>
+          <span class="j-msg"><span class="un">{{ j.unit }}:</span> <span v-html="j.msg"></span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 交互终端 ============ -->
+    <section class="tui rv" id="s-tty">
+      <span class="lbl">— $ ssh guest@lnbo</span>
+      <div class="tty" id="ttybox" @click="focusTty">
+        <div class="tty-out" ref="toutEl">
+          <div v-for="(l,i) in ttyLines" :key="i" :class="l.cls" v-html="l.html"></div>
+        </div>
+        <form class="tty-in" @submit.prevent="runCmd" autocomplete="off">
+          <label for="tinput">guest@lnbo:~$</label>
+          <input id="tinput" ref="tinputEl" v-model="ttyInput" placeholder="输入命令，help 查看玩法…"
+                 spellcheck="false" autocapitalize="off" @keydown="ttyKey">
+        </form>
+      </div>
+    </section>
+
+    <!-- ============ 偶像 · 花譜 ============ -->
+    <section class="tui rv" id="s-kaf">
+      <span class="lbl">— $ wiki 花譜</span>
+      <div class="kaf">
+        <div class="kaf-info">
+          <div class="kaf-name">花譜<span>かふ · KAF</span></div>
+          <div class="kaf-role">バーチャルシンガー（虚拟歌手）· 创作歌手</div>
+          <p class="kaf-p">日本东北地方出身，现居东京。2018 年 10 月出道，以不公开真容的 3D 形象活动，凭借极具辨识度的<span class="hl">气声唱法（ウィスパーボイス）</span>与完整的世界观崭露头角，出道曲《糸》曾进入 iTunes 综合榜前十。</p>
+          <p class="kaf-p">初期原创乐曲全部由カンザキイオリ提供，如今已成长为自行创作的バーチャルシンガーソングライター，并与众多艺术家合作。粉丝名为「<span class="hl">観測者</span>」，2021 年与理芽、春猿火、ヰ世界情緒、幸祜结成五人组合 V.W.P。</p>
+          <p class="kaf-p kaf-me">—— 本站站长，正是万千観測者之一：观测花譜，也观测这台服务器的每一个进程。</p>
+        </div>
+        <div>
+          <div class="kaf-facts">
+            <div class="kf-row"><div class="k">出道</div><div class="v">2018 年 10 月 18 日</div></div>
+            <div class="kf-row"><div class="k">所属</div><div class="v">KAMITSUBAKI STUDIO（神椿工作室）</div></div>
+            <div class="kf-row"><div class="k">乐曲提供</div><div class="v">カンザキイオリ（初期全曲）· 现自主创作</div></div>
+            <div class="kf-row"><div class="k">形象设计</div><div class="v">PALOW.</div></div>
+            <div class="kf-row"><div class="k">粉丝名</div><div class="v">観測者（花組）</div></div>
+            <div class="kf-row"><div class="k">组合</div><div class="v">V.W.P —— 五人の電脳の魔女</div></div>
+            <div class="kf-row"><div class="k">代表曲</div><div class="v">糸 · 雛鳥 · アンサー</div></div>
+            <div class="kf-row"><div class="k">专辑</div><div class="v">観測（2019）· 魔法（2020）· 花と心臓 / 花と解答 · GSA（2024）</div></div>
+          </div>
+          <div class="kaf-more">
+            <a class="btn" href="https://zh.wikipedia.org/wiki/%E8%8A%B1%E8%AD%9C" target="_blank" rel="noopener">阅读完整维基百科 ↗</a>
+            <a class="btn ghost" href="https://ja.wikipedia.org/wiki/%E8%8A%B1%E8%AD%9C" target="_blank" rel="noopener">日本語 Wikipedia ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <p class="l1">感谢访问 —— 服务器持续运行中，欢迎再来。</p>
+    <p>© 2026 Lnbo · 与 Agent 协作构建 · Vue 3 + GSAP + Chart.js</p>
+  </footer>
+
+  <!-- tmux 状态栏 -->
+  <nav id="tmux">
+    <div class="wl">
+      <button v-for="w in windows" :key="w.id" class="win" :class="{on:activeWin===w.id}" @click="goWin(w.id)">{{ w.label }}</button>
+    </div>
+    <div class="wr">online · {{ clock }}<span class="bcur">▊</span></div>
+  </nav>
+
+</div>
+
+<script src="/vendor/vue.js"></script>
+<script src="/vendor/gsap.js"></script>
+<script src="/vendor/scrolltrigger.js"></script>
+<script src="/vendor/typed.js"></script>
+<script src="/vendor/chart.js"></script>
+<script src="/vendor/highlight.js"></script>
+<script defer src="/blog/assets/analytics.js"></script>
+<script>
+(function(){
+'use strict';
+gsap.registerPlugin(ScrollTrigger);
+var REDUCED=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+var FINE=window.matchMedia('(pointer:fine)').matches;
+var BOOT_TS=new Date('2026-08-17T22:07:24+08:00').getTime();
+function pad(n){return n<10?'0'+n:''+n}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+var app=Vue.createApp({
+  data:function(){return{
+    booting:!REDUCED, bootId:0, bootLines:[],
+    prog:0, clock:'--:--:--', uptime:'booting…',
+    fileIdx:0,
+    files:[
+      {name:'api.py',path:'/code-stream/api.py',lang:'python'},
+      {name:'gen_vault.py',path:'/code-stream/gen_vault.py',lang:'python'},
+      {name:'clean-bt.sh',path:'/code-stream/clean-bt.sh',lang:'bash'}
+    ],
+    procs:[
+      {pid:1,cmd:'systemd',cpu:'0.1',base:.1},
+      {pid:42,cmd:'pi-agent --collab',cpu:'23.3',base:23},
+      {pid:133,cmd:'codex --plan',cpu:'11.7',base:12},
+      {pid:507,cmd:'hermes --bridge',cpu:'8.2',base:8},
+      {pid:520,cmd:'bb-browser --auto',cpu:'4.4',base:4.4},
+      {pid:601,cmd:'x2md --daemon',cpu:'3.2',base:3.2}
+    ],
+    units:[
+      {base:'ai-agents',ext:'.service',active:'active',sub:'running',desc:'pi / Codex / Hermes —— 与 Agent 协调干活的主力单元'},
+      {base:'selfhost',ext:'.stack',active:'active',sub:'running',desc:'nginx · docker · xray · cloudflared · bt-panel 全家桶'},
+      {base:'x2md',ext:'.service',active:'active',sub:'running',desc:'网页 → Markdown 剪藏引擎，本站博客的动力来源'},
+      {base:'automation',ext:'.timer',active:'active',sub:'waiting',desc:'bb-browser 定时任务 · hermes 消息桥 · 定时推送'},
+      {base:'security-audit',ext:'.service',active:'active',sub:'running',desc:'lynis 加固 · 提权审计 · 访问日志分析'}
+    ],
+    projects:[
+      {perm:'drwxr-xr-x',name:'blog/',dir:true,desc:'记录 AI 圈动态 · 原创整理与剪藏 —— 《AI 圈两天两个大瓜》等',href:'/blog/'},
+      {perm:'drwxr-xr-x',name:'youaregood.cc/',dir:true,desc:'私人数字空间 —— 匿名信件系统 · 创意实验室 · 3D 星空 · 你很好',href:'http://www.youaregood.cc/'},
+      {perm:'-rwxr-xr-x',name:'x2md*',desc:'网页 → Markdown 剪藏引擎 + 自建用户/红心/评论 API',href:'/blog/login.html'},
+      {perm:'drwx------',name:'hermes-bridge/',dir:true,desc:'消息与自动化桥 —— 内部服务，不对外公开',lock:true},
+      {perm:'-rw-r--r--',name:'this_page.html',desc:'本页面 —— 与 Agent 协作完成（Vue 3 构建）'}
+    ],
+    journal:[
+      {time:'08-17 22:07:24',unit:'systemd[1]',msg:'服务器上线，自托管体系开始构建'},
+      {time:'08-25 03:12:00',unit:'data-migration',msg:'历史数据迁移完成，0 文件丢失'},
+      {time:'08-30 21:40:00',unit:'blog[1]',msg:'《AI 圈两天两个大瓜》发布 —— 与 pi 协作完成'},
+      {time:'08-30 23:25:14',unit:'kb[1]',msg:'Hermes 研究系列 ×9 章 · Codex 教程 ×4 篇整理入库'},
+      {time:'',unit:'site[1]',msg:'<span class="info">INFO</span> 个人主页正式上线'}
+    ],
+    links:[
+      {icon:'𝕏',name:'X / Twitter',handle:'@zhuxiaojian5',desc:'AI 领域长文与日常观察',href:'https://x.com/zhuxiaojian5'},
+      {icon:'⑂',name:'GitHub',handle:'@monikalnbo',desc:'开源项目与日常构建',href:'https://github.com/monikalnbo'},
+      {icon:'✉',name:'youaregood.cc',handle:'私人数字空间',desc:'匿名信件 · 创意实验室 · 3D 星空 · you are good',href:'http://www.youaregood.cc/'}
+    ],
+    ttyLines:[], ttyInput:'', ttyHist:[], ttyIdx:0,
+    windows:[
+      {id:'s-main',label:'0:lnbo*'},{id:'s-code',label:'1:code'},{id:'s-whoami',label:'2:whoami'},
+      {id:'s-units',label:'3:units'},{id:'s-proj',label:'4:proj'},{id:'s-links',label:'5:links'},
+      {id:'s-logs',label:'6:logs'},{id:'s-tty',label:'7:tty'},{id:'s-kaf',label:'8:kaf'}
+    ],
+    activeWin:'s-main'
+  }},
+  computed:{
+  },
+  mounted:function(){
+    var self=this;
+    this.$nextTick(function(){
+      self.initBoot(); self.initClock(); self.initChart(); self.initAmbience();
+      self.initSpy(); self.initScrollAnims(); self.initCodePanes(); self.ttyMotd();
+      if(REDUCED){self.booting=false; self.enterAnimations();}
+    });
+  },
+  methods:{
+    /* ---------- 开机序列 ---------- */
+    initBoot:function(){
+      var self=this,lines=[
+        ['SYSTEM BOOT · 个人主页初始化',''],
+        ['Memory check: OK','dimln'],
+        ['Loading /home/lnbo …','dimln'],
+        ['[  OK  ] 服务状态正常','ok'],
+        ['[  OK  ] 欢迎访问','ok']
+      ],i=0;
+      this._bootIv=setInterval(function(){
+        if(i>=lines.length){clearInterval(self._bootIv);setTimeout(self.skipBoot,320);return;}
+        self.bootLines.push({id:self.bootId++,t:lines[i][0],cls:lines[i][1]});i++;
+      },130);
+    },
+    skipBoot:function(){
+      var self=this;
+      if(this._bootIv)clearInterval(this._bootIv);
+      if(!this.booting)return;
+      this.booting=false;
+      if(!REDUCED){
+        var crt=document.createElement('div');crt.id='crton';document.body.appendChild(crt);
+        setTimeout(function(){crt.remove()},650);
+      }
+      this.$nextTick(this.enterAnimations);
+    },
+    enterAnimations:function(){
+      var self=this;
+      if(REDUCED){this.initTyped();return;}
+      gsap.timeline({delay:.08})
+        .from('.hero-l .svc',{y:14,opacity:0,duration:.5,ease:'power2.out'},0)
+        .from('.tagline',{y:16,opacity:0,duration:.5,ease:'power2.out'},.4)
+        .from('.cta .btn',{y:14,opacity:0,stagger:.09,duration:.4,ease:'power2.out'},.55)
+        .from('.hero-r .card',{y:28,opacity:0,stagger:.15,duration:.65,ease:'power3.out'},.3);
+      this.scramble(this.$refs.nameEl,'Lnbo',900);
+      this.initTyped();
+      if(FINE)gsap.to('.hero-r',{yPercent:7,ease:'none',
+        scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:1.2}});
+    },
+    scramble:function(el,text,dur){
+      if(REDUCED){el.textContent=text;return}
+      var pool='█▓▒░<>/\\{}[]=+*#?!$&',start=performance.now();
+      (function f(t){
+        var p=Math.min(1,(t-start)/dur),out='';
+        for(var i=0;i<text.length;i++)
+          out+= i/text.length<p ? text[i] : pool[Math.floor(Math.random()*pool.length)];
+        el.textContent=out;
+        if(p<1)requestAnimationFrame(f); else el.textContent=text;
+      })(start);
+    },
+    initTyped:function(){
+      if(this._typed||!window.Typed)return;
+      var el=document.getElementById('statusmsg');if(!el)return;
+      this._typed=new Typed('#statusmsg',{
+        strings:['把想法变成能跑的服务','与 Agent 协作，各展所长','数据自主 · 工具自持','持续构建，持续观测'],
+        typeSpeed:36,backSpeed:14,backDelay:2300,loop:true,smartBackspace:false
+      });
+    },
+    /* ---------- 时钟 & uptime ---------- */
+    initClock:function(){
+      var self=this;
+      var f=function(){
+        var n=new Date();
+        self.clock=pad(n.getHours())+':'+pad(n.getMinutes())+':'+pad(n.getSeconds());
+        var s=Math.max(0,Math.floor((Date.now()-BOOT_TS)/1000));
+        var d=Math.floor(s/86400);s-=d*86400;var h=Math.floor(s/3600);s-=h*3600;var m=Math.floor(s/60);
+        self.uptime=d+' 天 '+h+' 小时 '+m+' 分 '+pad(s%60)+' 秒';
+      };
+      f();setInterval(f,1000);
+    },
+    /* ---------- Chart.js 实时负载 ---------- */
+    initChart:function(){
+      var self=this,ctx=this.$refs.chartEl;if(!ctx||!window.Chart)return;
+      var COLORS=['#e9b872','#f6ddb0','#a3b58c','#cbb182'];
+      var N=32;
+      var mk=function(base){var a=[];for(var i=0;i<N;i++)a.push(Math.max(.3,base+Math.random()*12-6));return a};
+      this._chart=new Chart(ctx,{
+        type:'line',
+        data:{labels:Array(N).fill(''),datasets:this.procs.slice(1,5).map(function(p,i){
+          return {data:mk(p.base),borderColor:COLORS[i],backgroundColor:COLORS[i]+'1e',
+            borderWidth:1.4,fill:i===0,tension:.38,pointRadius:0};
+        })},
+        options:{responsive:true,maintainAspectRatio:false,animation:false,
+          plugins:{legend:{display:false},tooltip:{enabled:false}},
+          scales:{x:{display:false},
+            y:{min:0,suggestedMax:45,grid:{color:'rgba(233,184,114,.06)'},border:{display:false},
+               ticks:{color:'#9a7b4e',font:{family:'ui-monospace,Consolas,monospace',size:9},maxTicksLimit:4}}}}
+      });
+      setInterval(function(){
+        if(document.hidden)return;
+        self.procs.forEach(function(p,i){
+          if(!p.inf)p.cpu=(Math.max(.3,p.base+Math.random()*14-7)).toFixed(1);
+        });
+        if(!self._chart)return;
+        self._chart.data.datasets.forEach(function(ds,di){
+          ds.data.push(Math.max(.3,self.procs[di+1].base+Math.random()*14-7));ds.data.shift();
+        });
+        self._chart.update('none');
+      },1600);
+    },
+    /* ---------- 氛围：代码雨/聚光/尾迹/倾斜/进度 ---------- */
+    initAmbience:function(){
+      var self=this;
+      window.addEventListener('scroll',function(){
+        var h=document.documentElement;
+        self.prog=Math.min(100,h.scrollTop/(h.scrollHeight-h.clientHeight)*100);
+      },{passive:true});
+      if(!FINE)return;
+      /* 聚光 */
+      var spot=document.getElementById('spot'),mx=0,my=0,rq=0;
+      window.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;
+        if(!rq)rq=requestAnimationFrame(function(){spot.style.setProperty('--mx',mx+'px');spot.style.setProperty('--my',my+'px');rq=0;});
+      },{passive:true});
+      if(REDUCED)return;
+      /* 尾迹 */
+      var last=0;
+      window.addEventListener('mousemove',function(e){
+        var now=Date.now();if(now-last<34)return;last=now;
+        if(document.querySelectorAll('.trail').length>26)return;
+        var d=document.createElement('div');d.className='trail';
+        d.style.left=(e.clientX+(Math.random()*8-4))+'px';d.style.top=(e.clientY+(Math.random()*8-4))+'px';
+        document.body.appendChild(d);
+        d.addEventListener('animationend',function(){d.remove()});
+      },{passive:true});
+      /* 卡片 3D 倾斜 */
+      document.querySelectorAll('[data-tilt]').forEach(function(card){
+        var rx=gsap.quickTo(card,'rotationX',{duration:.4,ease:'power2.out'});
+        var ry=gsap.quickTo(card,'rotationY',{duration:.4,ease:'power2.out'});
+        gsap.set(card,{transformPerspective:700});
+        card.addEventListener('mousemove',function(e){
+          var r=card.getBoundingClientRect();
+          ry(((e.clientX-r.left)/r.width-.5)*6);rx(-((e.clientY-r.top)/r.height-.5)*5);
+        });
+        card.addEventListener('mouseleave',function(){gsap.to(card,{rotationX:0,rotationY:0,duration:.5,ease:'power2.out'})});
+      });
+      /* 琥珀代码雨 */
+      var cv=document.getElementById('rain');if(!cv)return;
+      var ctx2=cv.getContext('2d'),dpr=Math.min(2,window.devicePixelRatio||1),W,H,drops=[],CW=19;
+      var glyphs='01<>{}/\\=+*#;:$!?&%lnboAIπ観測者server';
+      function rs(){W=innerWidth;H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;
+        ctx2.setTransform(dpr,0,0,dpr,0,0);
+        drops=[];for(var x=0;x<W+CW;x+=CW)drops.push({y:Math.random()*H,v:.5+Math.random()*1.2});
+      }
+      rs();window.addEventListener('resize',rs);
+      ctx2.font='13px ui-monospace,Consolas,monospace';
+      var lastT=0;
+      (function loop(t){
+        requestAnimationFrame(loop);
+        if(t-lastT<46||document.hidden)return;lastT=t;
+        ctx2.globalCompositeOperation='destination-out';
+        ctx2.fillStyle='rgba(0,0,0,.13)';ctx2.fillRect(0,0,W,H);
+        ctx2.globalCompositeOperation='source-over';
+        for(var i=0;i<drops.length;i++){
+          var d=drops[i],x=i*CW+8;
+          ctx2.fillStyle=Math.random()<.06?'rgba(246,221,176,.5)':'rgba(233,184,114,.3)';
+          ctx2.fillText(glyphs[Math.floor(Math.random()*glyphs.length)],x,d.y);
+          d.y+=d.v;
+          if(d.y>H+30&&Math.random()>.972){d.y=-30-Math.random()*120;d.v=.5+Math.random()*1.2}
+        }
+      })(0);
+    },
+    /* ---------- 滚动显现 & scrollspy ---------- */
+    initScrollAnims:function(){
+      if(REDUCED){
+        document.querySelectorAll('.rv,.rv-row').forEach(function(el){el.classList.add('on')});return;
+      }
+      ScrollTrigger.batch('.rv',{start:'top 86%',
+        onEnter:function(b){gsap.to(b,{opacity:1,y:0,duration:.7,stagger:.12,ease:'power2.out',overwrite:true})}});
+      ScrollTrigger.batch('.rv-row',{start:'top 90%',
+        onEnter:function(b){gsap.to(b,{opacity:1,x:0,duration:.5,stagger:.06,ease:'power2.out',overwrite:true})}});
+    },
+    initSpy:function(){
+      var self=this;
+      var io=new IntersectionObserver(function(es){
+        es.forEach(function(e){if(e.isIntersecting)self.activeWin=e.target.id});
+      },{rootMargin:'-42% 0px -52% 0px'});
+      this.windows.forEach(function(w){var el=document.getElementById(w.id);if(el)io.observe(el)});
+    },
+    goWin:function(id){
+      var el=document.getElementById(id);
+      if(el)el.scrollIntoView({behavior:REDUCED?'auto':'smooth'});
+      if(id==='s-tty')setTimeout(this.focusTty,REDUCED?0:600);
+    },
+    /* ---------- 双栏代码流（hljs） ---------- */
+    initCodePanes:function(){
+      var self=this;
+      fetch('/').then(function(r){return r.text()}).then(function(t){
+        self.renderPane(self.$refs.paneAEl,t,'xml');
+      }).catch(function(){
+        self.renderPane(self.$refs.paneAEl,'# 获取源码失败 —— 但你的浏览器正在运行它','bash');
+      });
+      this.loadFile(0);
+      if(!REDUCED&&this.$refs.csEl){
+        var cs=this.$refs.csEl;
+        cs.addEventListener('mouseenter',function(){self._csFast=true});
+        cs.addEventListener('mouseleave',function(){self._csFast=false});
+      }
+    },
+    loadFile:function(i){
+      var self=this;this.fileIdx=i;var f=this.files[i];
+      fetch(f.path).then(function(r){return r.text()}).then(function(t){
+        self.renderPane(self.$refs.paneBEl,t,f.lang);
+      });
+    },
+    renderPane:function(box,code,lang){
+      var lines=code.split('\n');if(lines.length>1300){lines=lines.slice(0,1300);lines.push('… truncated');}
+      var html;try{html=hljs.highlight(lines.join('\n'),{language:lang}).value}
+      catch(e){html=esc(lines.join('\n'))}
+      var nums=lines.map(function(_,i){return '<i>'+(i+1)+'</i>'}).join('');
+      var one='<div class="cw"><div class="gutter">'+nums+'</div><pre class="code hljs">'+html+'</pre></div>';
+      box.innerHTML='<div class="cwrap">'+one+one+'</div>';
+      this.stream(box);
+    },
+    stream:function(box){
+      var self=this,half=box.scrollHeight/2,y=0,vis=true,token=(box._tok=(box._tok||0)+1);
+      new IntersectionObserver(function(es){vis=es[0].isIntersecting},{threshold:0}).observe(box);
+      if(REDUCED){box.scrollTop=0;return}
+      var last=performance.now();
+      (function step(t){
+        if(box._tok!==token)return;
+        var dt=Math.min(60,t-last);last=t;
+        if(vis&&!document.hidden&&half>box.clientHeight){
+          y+=.38*(self._csFast?5.5:1)*dt/16.7;
+          if(y>=half)y-=half;
+          box.scrollTop=y;
+        }
+        requestAnimationFrame(step);
+      })(last);
+    },
+    /* ---------- 交互终端 ---------- */
+    ttyMotd:function(){
+      this.ttyLines.push(
+        {cls:'d',html:'Debian GNU/Linux 12 · tty1'},
+        {cls:'m',html:'guest 会话已建立 —— 输入 <span class="a">help</span> 查看玩法'},
+        {cls:'d',html:'提示：neofetch / uptime / social'},
+        {cls:'',html:'&nbsp;'}
+      );
+    },
+    focusTty:function(){if(this.$refs.tinputEl)this.$refs.tinputEl.focus()},
+    ttyPrint:function(html,cls){this.ttyLines.push({cls:cls||'',html:html});
+      var self=this;this.$nextTick(function(){var o=self.$refs.toutEl;if(o)o.scrollTop=o.scrollHeight})},
+    ttyKey:function(e){
+      if(e.key==='ArrowUp'){e.preventDefault();if(this.ttyIdx>0){this.ttyIdx--;this.ttyInput=this.ttyHist[this.ttyIdx]||''}}
+      else if(e.key==='ArrowDown'){e.preventDefault();if(this.ttyIdx<this.ttyHist.length){this.ttyIdx++;this.ttyInput=this.ttyHist[this.ttyIdx]||''}}
+    },
+    runCmd:function(){
+      var raw=this.ttyInput.trim();this.ttyInput='';if(!raw)return;
+      this.ttyHist.push(raw);this.ttyIdx=this.ttyHist.length;
+      this.ttyPrint('<span class="g">guest@lnbo:~$</span> '+esc(raw));
+      var parts=raw.split(/\s+/),cmd=parts[0].toLowerCase(),args=parts.slice(1);
+      var C=this.CMDS();
+      if(C[cmd])C[cmd](args);else this.ttyPrint('bash: '+esc(cmd)+': command not found —— 输入 <span class="a">help</span> 看看能干嘛','e');
+    },
+    CMDS:function(){
+      var self=this,r=function(b){return (Math.max(.3,b+Math.random()*10-5)).toFixed(1)};
+      return {
+        help:function(){self.ttyPrint(
+          '<span class="a">help</span>     本清单        <span class="a">whoami</span>   你是谁（我猜）<br>'+
+          '<span class="a">neofetch</span> 机器名片      <span class="a">uptime</span>   真实在线时长<br>'+
+          '<span class="a">top</span>      负载快照      <span class="a">ls</span>       项目列表<br>'+
+          '<span class="a">cat</span>      cat about.txt <span class="a">blog</span>     打开博客<br>'+
+          '<span class="a">date</span>     当前时间      <span class="a">echo</span>     复读机<br>'+
+          '<span class="a">x</span>        我的 X 账号   <span class="a">gh</span>       我的 GitHub<br>'+
+          '<span class="a">yyd</span>      youaregood.cc <span class="a">kaf</span>      偶像 · 花譜<br>'+
+          '<span class="a">social</span>   全部链接      <span class="a">clear</span>    清屏<br>'+
+          '<span class="a">sudo …</span>   权限测试      <span class="a">exit</span>     断开连接','m')},
+        whoami:function(){self.ttyPrint('guest —— 欢迎访问本站。','m')},
+        uptime:function(){self.ttyPrint('<span class="g">'+self.uptime+'</span> —— 自 2026-08-17 22:07:24 起持续运行','m')},
+        date:function(){self.ttyPrint(new Date().toString(),'m')},
+        ls:function(){self.ttyPrint('blog/  youaregood.cc/  x2md*  hermes-bridge/  <span class="a">this_page.html</span>  about.txt','m')},
+        blog:function(){self.ttyPrint('正在打开 ~/blog …','g');window.open('/blog/','_blank')},
+        x:function(){self.ttyPrint('正在打开 X 主页 —— <span class="a">@zhuxiaojian5</span> …','g');window.open('https://x.com/zhuxiaojian5','_blank')},
+        gh:function(){self.ttyPrint('正在打开 GitHub —— <span class="a">@monikalnbo</span> …','g');window.open('https://github.com/monikalnbo','_blank')},
+        yyd:function(){self.ttyPrint('正在打开 youaregood.cc —— 你很好 ✦','g');window.open('http://www.youaregood.cc/','_blank')},
+        social:function(){self.ttyPrint(
+          '𝕏  X / Twitter   <span class="a">@zhuxiaojian5</span>   → x.com/zhuxiaojian5<br>'+
+          '⑂  GitHub       <span class="a">@monikalnbo</span>     → github.com/monikalnbo<br>'+
+          '✉  youaregood.cc <span class="a">私人数字空间</span>    → youaregood.cc<br>'+
+          '✍ 博客          <span class="a">/blog</span>            → 本机 /blog 目录','m')},
+        clear:function(){self.ttyLines=[]},
+        echo:function(a){self.ttyPrint(esc(a.join(' '))||' ','m')},
+        exit:function(){self.ttyPrint('logout','d');self.ttyPrint('（可直接关闭标签页）','d')},
+        vim:function(){self.ttyPrint('未安装 vim。','m')},
+        neofetch:function(){
+          var art=' _      ___ ____  _____   \n| |    |_ _/ ___|| ____|  \n| |     | | \\___ \\|  _|    \n| |___  | | ___) | |___   \n|_____|___|____/|_____|   \n                          ';
+          var info=['Lnbo@server','──────────────────','OS:        Debian 12 (bookworm) x86_64','Host:      独立服务器 · 自托管','Kernel:    Linux 6.1.0-amd64','Uptime:    '+self.uptime,'Shell:     pi-agent','Terminal:  浏览器 · tty1','Fan:       花譜 · 観測者','CPU:       常年在线','Memory:    运行良好'];
+          var a=art.split('\n'),b=info,out=[];
+          for(var i=0;i<Math.max(a.length,b.length);i++)
+            out.push('<span class="a">'+esc((a[i]||'').padEnd(28))+'</span>  '+esc(b[i]||''));
+          self.ttyPrint('<pre>'+out.join('\n')+'</pre>');
+        },
+        top:function(){
+          self.ttyPrint('<pre><span class="a">top — '+self.uptime+' · 1 user · load average: 0.42, 0.35, 0.31</span>\n'+
+            '<span class="d">  PID USER      %CPU %MEM COMMAND</span>\n'+
+            '    1 root       0.1  0.0 systemd\n'+
+            '   42 srv       '+r(23)+'  0.3 <span class="g">pi-agent --collab</span>\n'+
+            '  133 srv       '+r(12)+'  0.2 codex --plan\n'+
+            '  507 srv       '+r(8)+'  0.1 hermes --bridge\n'+
+            '  520 srv       '+r(4)+'  0.1 bb-browser --auto\n'+
+            '  601 srv       '+r(3)+'  0.1 x2md --daemon</pre>');
+        },
+        cat:function(a){
+          if(a[0]==='about.txt')self.ttyPrint('我和 Agent 协调工作 —— 我出想法、拆任务、验收上线，它们出代码和执行。完整版往上翻 whoami 区块。','m');
+          else if(a[0]==='blog.txt'){self.ttyPrint('cat: blog.txt: Is a directory → 已改用浏览器打开','d');return this.blog()}
+          else self.ttyPrint('cat: '+(esc(a[0]||'?'))+': No such file or directory','e');
+        },
+        sudo:function(){
+          self.ttyPrint('[sudo] guest 的密码：','d');
+          setTimeout(function(){self.ttyPrint('guest 不在 sudoers 文件中，操作已被拒绝。','m')},620);
+        },
+        rm:function(a){
+          var j=a.join(' ').replace(/\s+/g,' ');
+          if(j.indexOf('-rf /')>-1||j.indexOf('-fr /')>-1){
+            self.ttyPrint('检测到危险命令 —— 已拒绝并记录。','e');
+          }else self.ttyPrint('rm: 权限不足。','e');
+        },
+        kaf:function(){self.ttyPrint('花譜（かふ / KAF）—— バーチャルシンガー，KAMITSUBAKI STUDIO 所属。<br>2018 年出道，气声唱法（ウィスパーボイス），粉丝名「観測者」。<br>代表曲：《糸》《雛鳥》《アンサー》 —— 正在打开维基百科 …','m');window.open('https://zh.wikipedia.org/wiki/%E8%8A%B1%E8%AD%9C','_blank')}
+      };
+    }
+  }
+});
+/* 挂载 */
+/* 挂载 */
+app.mount('#app');
+})();
+</script>
+</body>
+</html>
