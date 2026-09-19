@@ -4,114 +4,59 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Lnbo · 服务器导航</title>
-<meta name="description" content="Lnbo 自托管服务导航 · 服务器上可访问的项目网页">
-<meta name="theme-color" content="#0b0907">
+<meta name="description" content="Lnbo 自托管服务导航 · 个人主页 / 博客 / 主服务器入口">
+<meta name="theme-color" content="#070312">
 <meta name="robots" content="noindex">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
-<style>
-:root{
-  --bg:#0b0907; --panel:#15110b; --line:#372d1d; --line2:#4e3e26;
-  --amber:#e9b872; --hi:#f6ddb0; --dim:#9a7b4e; --dimmer:#5e4b2f;
-  --text:#ece4d4; --muted:#a99c88; --ok:#a3b58c; --err:#d98d78;
-  --mono:ui-monospace,'SF Mono','Cascadia Mono','JetBrains Mono',Menlo,Consolas,'PingFang SC','Microsoft YaHei',monospace;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:var(--bg); color:var(--text); font-family:var(--mono);
-  font-size:15px; line-height:1.7; min-height:100vh;
-}
-.wrap{max-width:880px;margin:0 auto;padding:48px 20px 64px}
-::selection{background:var(--amber);color:#17110a}
-a{color:var(--amber);text-decoration:none}
-
-/* header */
-header{margin-bottom:36px}
-.svc{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);
-  border:1px solid var(--line);border-radius:99px;padding:3px 14px;margin-bottom:14px;background:var(--panel)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);
-  box-shadow:0 0 6px var(--ok);animation:pulse 2.4s infinite}
-@keyframes pulse{50%{opacity:.45}}
-h1{font-size:26px;color:var(--hi);letter-spacing:1px}
-h1 b{color:var(--amber)}
-.sub{color:var(--dim);font-size:13px;margin-top:2px}
-
-/* section */
-section{margin-top:34px}
-.lbl{display:flex;align-items:center;gap:10px;color:var(--dim);font-size:13px;margin-bottom:14px}
-.lbl::after{content:"";flex:1;height:1px;background:var(--line)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-
-/* 整卡即链接 */
-a.card{display:block;border:1px solid var(--line);background:var(--panel);border-radius:10px;
-  padding:16px 18px;transition:border-color .2s,transform .2s;position:relative;
-  color:var(--text);cursor:pointer}
-a.card:hover{border-color:var(--amber);transform:translateY(-2px)}
-.card .name{color:var(--hi);font-size:16px;font-weight:700;display:flex;align-items:center;gap:8px}
-.card .desc{color:var(--muted);font-size:13px;margin-top:4px}
-.card .url{color:var(--dim);font-size:12px;margin-top:10px;display:inline-block}
-.card:hover .url{color:var(--amber)}
-.st{margin-left:auto;font-size:11px;display:inline-flex;align-items:center;gap:6px;color:var(--dim)}
-.st i{width:7px;height:7px;border-radius:50%;background:var(--dimmer);display:inline-block}
-.st.on{color:var(--ok)} .st.on i{background:var(--ok);box-shadow:0 0 5px var(--ok)}
-.st.off{color:var(--err)} .st.off i{background:var(--err)}
-
-footer{margin-top:48px;color:var(--dimmer);font-size:12px;line-height:2}
-footer a{color:var(--dim)}
-</style>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23070312'/%3E%3Cpath d='M9 1 3 9h4l-1 6 6-8H8z' fill='%23a78bfa'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/nav.css">
 </head>
 <body>
+
+<canvas id="stars"></canvas>
+<div id="aurora"></div>
+<canvas id="lightning"></canvas>
+<div id="flash"></div>
+<div id="vig"></div>
+
 <div class="wrap">
 
   <header>
-    <div class="svc"><span class="dot"></span>online · lnbo-server</div>
-    <h1>Lnbo <b>· 服务器导航</b></h1>
-    <p class="sub">本服务器上可访问的项目网页一览</p>
+    <div class="status"><span class="dot"></span>ONLINE · LNBO-SERVER / SELF</div>
+    <h1>Lnbo · 服务器导航</h1>
+    <p class="sub">self.lnboself.cn —— 平静夜空之下,电流按需抵达</p>
+    <div class="e-line"></div>
   </header>
 
   <section>
-    <div class="lbl">— 站点项目（同域路径 · 点击整卡打开）</div>
+    <div class="lbl">本机页面 <b>· self.lnboself.cn</b></div>
     <div class="grid">
 
+      <a class="card" href="/me/">
+        <div class="c-top"><span class="c-ic">~</span><span class="name">个人主页</span>
+          <span class="st" data-check="/me/"><i></i><span>检测中</span></span></div>
+        <div class="desc">Lnbo —— 关于 / 技能 / 项目 / 链接 / 日志 / 花譜</div>
+        <span class="url">/me/ ↗</span>
+      </a>
+
       <a class="card" href="/blog/">
-        <div class="name">博客 <span class="st" data-check="/blog/"><i></i><span>检测中</span></span></div>
-        <div class="desc">Lnbo 日记本 · 记录与分享</div>
+        <div class="c-top"><span class="c-ic">✎</span><span class="name">博客</span>
+          <span class="st" data-check="/blog/"><i></i><span>检测中</span></span></div>
+        <div class="desc">Lnbo 日记本 —— 记录与分享</div>
         <span class="url">/blog/ ↗</span>
       </a>
 
-      <a class="card" href="/dashang/">
-        <div class="name">赛博要饭 <span class="st" data-check="/dashang/"><i></i><span>检测中</span></span></div>
-        <div class="desc">打赏页 · 投币留言上功德簿</div>
-        <span class="url">/dashang/ ↗</span>
-      </a>
+    </div>
+  </section>
 
-      <a class="card" href="/qipai/">
-        <div class="name">雅趣棋牌馆 <span class="st" data-check="/qipai/"><i></i><span>检测中</span></span></div>
-        <div class="desc">斗地主 / 飞行棋 / 国际象棋 · 实时对战</div>
-        <span class="url">/qipai/ ↗</span>
-      </a>
+  <section>
+    <div class="lbl">另一台服务器 <b>· lnboself.cn</b></div>
+    <div class="grid">
 
-      <a class="card" href="/hedui/">
-        <div class="name">核对工具 <span class="st" data-check="/hedui/"><i></i><span>检测中</span></span></div>
-        <div class="desc">双表核对 · 各平台版本下载</div>
-        <span class="url">/hedui/ ↗</span>
-      </a>
-
-      <a class="card" href="/mods/">
-        <div class="name">MC 模组列表 <span class="st" data-check="/mods/"><i></i><span>检测中</span></span></div>
-        <div class="desc">服务器必装模组 · 整包一键下载</div>
-        <span class="url">/mods/ ↗</span>
-      </a>
-
-      <a class="card" href="/download/">
-        <div class="name">下载站 <span class="st" data-check="/download/"><i></i><span>检测中</span></span></div>
-        <div class="desc">软件直链 · 本站托管上传</div>
-        <span class="url">/download/ ↗</span>
-      </a>
-
-      <a class="card" data-scheme="http" data-port="6080" href="/vnc.html">
-        <div class="name">网页桌面 <span class="st" data-check=":6080"><i></i><span>直连</span></span></div>
-        <div class="desc">noVNC · 远程桌面</div>
-        <span class="url" data-url>:6080/vnc.html ↗</span>
+      <a class="card" href="https://lnboself.cn/" target="_blank" rel="noopener">
+        <div class="c-top"><span class="c-ic">⌘</span><span class="name">主服务器导航</span>
+          <span class="st ext"><i></i><span>外部 ↗</span></span></div>
+        <div class="desc">103.205.240.33 —— 那台机器上部署的全部服务入口</div>
+        <span class="url">https://lnboself.cn/ ↗</span>
       </a>
 
     </div>
@@ -119,38 +64,125 @@ footer a{color:var(--dim)}
 
   <footer>
     <div>$ uptime — <span id="uptime">…</span></div>
-    <div>© Lnbo · <a href="/me.html">旧版个人页</a> · <a href="/blog/">博客</a></div>
+    <div>© Lnbo · <a href="/me/">个人主页</a> · <a href="/blog/">博客</a> · <a href="https://lnboself.cn/" target="_blank" rel="noopener">主服务器 lnboself.cn</a></div>
   </footer>
 
 </div>
 
 <script>
-// 端口链接：按当前访问的主机名动态生成（域名或 IP 均可）
-document.querySelectorAll('[data-port]').forEach(a=>{
-  const s=a.dataset.scheme,p=a.dataset.port;
-  a.href=s+'://'+location.hostname+(p?':'+p:'')+a.getAttribute('href');
-  const u=a.querySelector('[data-url]');
-  if(u) u.textContent=':'+p+a.getAttribute('href')+' ↗';
-});
+(function(){
+'use strict';
+var REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// 同域项目在线检测
-document.querySelectorAll('.st[data-check]').forEach(el=>{
-  const path=el.dataset.check, tag=el.querySelector('span');
-  if(path.startsWith(':')) return; // 直连端口，跳过
-  fetch(path,{method:'HEAD',cache:'no-store'}).then(r=>{
-    el.classList.add(r.ok?'on':'off'); tag.textContent=r.ok?'在线':'异常 '+r.status;
-  }).catch(()=>{
-    el.classList.add('off'); tag.textContent='离线';
+/* ── 星尘:缓慢漂移的紫色光点 ── */
+  var cv=document.getElementById('stars');if(!cv)return;
+  var ctx=cv.getContext('2d'),stars=[],W,H;
+  function rs(){W=cv.width=innerWidth*devicePixelRatio;H=cv.height=innerHeight*devicePixelRatio;
+    cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';
+    stars=[];var n=Math.min(150,Math.floor(innerWidth*innerHeight/11000));
+    for(var i=0;i<n;i++)stars.push({x:Math.random()*W,y:Math.random()*H,
+      r:(Math.random()*1.4+.3)*devicePixelRatio,s:Math.random()*.22+.04,
+      tw:Math.random()*Math.PI*2,ts:Math.random()*.015+.004,
+      hue:Math.random()<.7?255:270});
+  }
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(var i=0;i<stars.length;i++){var st=stars[i];
+      st.y-=st.s*devicePixelRatio;if(st.y<-4)st.y=H+4;
+      st.tw+=st.ts;var a=.28+Math.abs(Math.sin(st.tw))*.5;
+      ctx.beginPath();ctx.arc(st.x,st.y,st.r,0,7);
+      ctx.fillStyle='hsla('+st.hue+',70%,82%,'+a+')';
+      ctx.shadowColor='hsla('+st.hue+',80%,75%,.8)';ctx.shadowBlur=6*devicePixelRatio;
+      ctx.fill();ctx.shadowBlur=0;
+    }
+    requestAnimationFrame(draw);
+  }
+  rs();addEventListener('resize',rs);
+  if(!REDUCED)requestAnimationFrame(draw);else draw();
+})();
+
+/* ── 雷光:随机时刻在页面上方劈出一道 ── */
+(function(){
+  if(REDUCED)return;
+  var cv=document.getElementById('lightning'),ctx=cv.getContext('2d'),DPR=devicePixelRatio;
+  var bolts=[];/* {pts:[[x,y]..],branches:[..],life:1} */
+  function rs(){cv.width=innerWidth*DPR;cv.height=innerHeight*DPR;
+    cv.style.width=innerWidth+'px';cv.style.height=innerHeight+'px';}
+  rs();addEventListener('resize',rs);
+
+  function makeBolt(){
+    var W=cv.width,H=cv.height;
+    var x=W*(.12+Math.random()*.76),y=-10;
+    var endY=H*(.24+Math.random()*.3);
+    var pts=[[x,y]];
+    while(y<endY){y+=H*(.03+Math.random()*.05);x+=(Math.random()-.5)*W*.055;pts.push([x,y]);}
+    var branches=[];
+    for(var b=0;b<2+Math.floor(Math.random()*2);b++){
+      var i=Math.floor(Math.random()*(pts.length-2))+1,bp=[pts[i]],bx=pts[i][0],by=pts[i][1];
+      var dir=Math.random()<.5?-1:1,len=3+Math.floor(Math.random()*4);
+      for(var k=0;k<len;k++){by+=H*.03+Math.random()*H*.04;bx+=dir*(W*.02+Math.random()*W*.04);bp.push([bx,by]);}
+      branches.push({pts:bp,life:1});
+    }
+    bolts.push({pts:pts,branches:branches,life:1});
+    /* 闪幕 */
+    var f=document.getElementById('flash');
+    f.style.setProperty('--fx',(x/W*100)+'%');f.style.setProperty('--fy','8%');
+    f.classList.add('hit');setTimeout(function(){f.classList.remove('hit')},60);
+  }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    for(var i=bolts.length-1;i>=0;i--){
+      var b=bolts[i];b.life-=.055;if(b.life<=0){bolts.splice(i,1);continue;}
+      var a=Math.max(0,b.life);
+      ctx.lineCap='round';ctx.lineJoin='round';
+      /* 外层辉光 */
+      ctx.shadowColor='rgba(167,139,250,.95)';ctx.shadowBlur=22*DPR;
+      ctx.strokeStyle='rgba(196,181,253,'+(a*.9)+')';ctx.lineWidth=2.2*DPR;
+      stroke(b.pts);
+      /* 内芯亮白 */
+      ctx.shadowBlur=8*DPR;
+      ctx.strokeStyle='rgba(245,240,255,'+a+')';ctx.lineWidth=.9*DPR;
+      stroke(b.pts);
+      /* 分支 */
+      ctx.shadowBlur=12*DPR;
+      ctx.strokeStyle='rgba(167,139,250,'+(a*.55)+')';ctx.lineWidth=1.1*DPR;
+      for(var k=0;k<b.branches.length;k++)stroke(b.branches[k].pts);
+      ctx.shadowBlur=0;
+    }
+    requestAnimationFrame(draw);
+  }
+  function stroke(p){ctx.beginPath();ctx.moveTo(p[0][0],p[0][1]);
+    for(var j=1;j<p.length;j++)ctx.lineTo(p[j][0],p[j][1]);ctx.stroke();}
+  requestAnimationFrame(draw);
+  (function loop(){setTimeout(function(){makeBolt();loop();},3800+Math.random()*5200)})();
+  setTimeout(makeBolt,1400);/* 首击 */
+})();
+
+/* ── 卡片:指针跟随的柔光 ── */
+document.querySelectorAll('a.card').forEach(function(c){
+  c.addEventListener('pointermove',function(e){
+    var r=c.getBoundingClientRect();
+    c.style.setProperty('--mx',(e.clientX-r.left)+'px');
+    c.style.setProperty('--my',(e.clientY-r.top)+'px');
   });
 });
 
-// 页面已运行时长
-const t0=Date.now();
-setInterval(()=>{
-  const s=Math.floor((Date.now()-t0)/1000);
-  const m=String(Math.floor(s/60)).padStart(2,'0'), ss=String(s%60).padStart(2,'0');
-  document.getElementById('uptime').textContent='本页已运行 '+m+':'+ss;
+/* ── 同域页面在线检测 ── */
+document.querySelectorAll('.st[data-check]').forEach(function(el){
+  var path=el.dataset.check,tag=el.querySelector('span');
+  fetch(path,{method:'HEAD',cache:'no-store'}).then(function(r){
+    el.classList.add(r.ok?'on':'err');tag.textContent=r.ok?'在线':'异常 '+r.status;
+  }).catch(function(){el.classList.add('err');tag.textContent='离线';});
+});
+
+/* ── 运行时长 ── */
+var t0=Date.now();
+setInterval(function(){
+  var s=Math.floor((Date.now()-t0)/1000);
+  document.getElementById('uptime').textContent='本页已运行 '
+    +String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 },1000);
+})();
 </script>
 </body>
 </html>

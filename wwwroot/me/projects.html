@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目明细 · Lnbo</title>
+<meta name="description" content="Lnbo 的项目一览 —— 博客、剪藏引擎、匿名信箱、Rust 游戏引擎、消息桥,每个项目一张明细卡">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+<link rel="stylesheet" href="/me/assets/subnav.css">
+</head>
+<body>
+<div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
+
+<nav id="subnav">
+  <span class="crumb">lnbo@server:<b>~/me/</b></span>
+  <a href="/me/">总览</a>
+  <a href="/me/about.html">关于</a>
+  <a href="/me/skills.html">技能</a>
+  <a class="on" href="/me/projects.html">项目</a>
+  <a href="/me/links.html">链接</a>
+  <a href="/me/logs.html">日志</a>
+  <a href="/me/kaf.html">花譜</a>
+  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
+</nav>
+
+<div class="wrap">
+
+  <header class="p-head">
+    <div class="p-cmd">$ ls -la ~/projects/ --human-readable</div>
+    <h1 class="p-title">项目明细</h1>
+    <p class="p-desc">正在运行的项目、开源仓库与内部服务。每张卡片对应一个目录:用途、技术栈与当前状态一目了然。</p>
+    <div class="p-meta">
+      <span class="badge"><i></i>running × 3</span>
+      <span class="badge">open-source × 6</span>
+      <span class="badge">internal × 1</span>
+    </div>
+  </header>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>线上运行</b> · 可直接访问</span>
+    <div class="pcards">
+
+      <a class="pcard rv-row" href="/blog/">
+        <div class="p-name">blog/ <span class="p-status run">运行中</span></div>
+        <div class="p-desc">Lnbo 日记本 —— 记录 AI 圈动态、原创整理与剪藏长文;《AI 圈两天两个大瓜》《Codex 从零到精通》系列所在地。</div>
+        <div class="p-stack"><span>Nginx</span><span>Python stdlib</span><span>SQLite</span><span>自写缓存</span></div>
+        <div class="p-go">self.lnboself.cn/blog/ ↗</div>
+      </a>
+
+      <a class="pcard rv-row" href="http://www.youaregood.cc/" target="_blank" rel="noopener">
+        <div class="p-name">youaregood.cc/ <span class="p-status run">运行中</span></div>
+        <div class="p-desc">私人数字空间 —— 匿名信件系统 · 创意实验室 · 3D 星空。对陌生人说一句"你很好"的地方。</div>
+        <div class="p-stack"><span>匿名信箱</span><span>3D 星空</span><span>创意实验</span></div>
+        <div class="p-go">www.youaregood.cc ↗</div>
+      </a>
+
+      <a class="pcard rv-row" href="/blog/login.html">
+        <div class="p-name">x2md* <span class="p-status run">运行中</span></div>
+        <div class="p-desc">网页 → Markdown 剪藏引擎,配套自建用户 / 红心 / 评论 API;博客内容生产的流水线源头。</div>
+        <div class="p-stack"><span>Python</span><span>SQLite</span><span>RESP2 缓存</span></div>
+        <div class="p-go">本站 /api/ 后端 ↗</div>
+      </a>
+
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>开源仓库</b> · github.com/<b>monikalnbo</b></span>
+    <div class="pcards">
+
+      <a class="pcard rv-row" href="https://github.com/monikalnbo/lnbo-blog" target="_blank" rel="noopener">
+        <div class="p-name">lnbo-blog/ <span class="p-status wip">开源</span></div>
+        <div class="p-desc">本站源码仓库:博客 + 个人页 wwwroot 结构 + 零依赖后端 + 自写缓存层,克隆即部署。</div>
+        <div class="p-stack"><span>HTML</span><span>Python</span><span>Bash</span></div>
+        <div class="p-go">github.com/monikalnbo/lnbo-blog ↗</div>
+      </a>
+
+      <a class="pcard rv-row" href="https://github.com/monikalnbo/hermes-studio" target="_blank" rel="noopener">
+        <div class="p-name">hermes-studio/ <span class="p-status wip">开源</span></div>
+        <div class="p-desc">Hermes 研究系列的工作台 —— 消息桥与自动化工具的桌面端形态。</div>
+        <div class="p-stack"><span>TypeScript</span></div>
+        <div class="p-go">github.com/monikalnbo/hermes-studio ↗</div>
+      </a>
+
+      <a class="pcard rv-row" href="https://github.com/monikalnbo/galengine" target="_blank" rel="noopener">
+        <div class="p-name">galengine/ <span class="p-status wip">开源</span></div>
+        <div class="p-desc">Rust 编写的视觉小说(Galgame)引擎,配套 galengine-showcase 演示仓。</div>
+        <div class="p-stack"><span>Rust</span><span>引擎</span></div>
+        <div class="p-go">github.com/monikalnbo/galengine ↗</div>
+      </a>
+
+      <a class="pcard rv-row" href="https://github.com/monikalnbo/Lcode" target="_blank" rel="noopener">
+        <div class="p-name">Lcode/ <span class="p-status wip">开源</span></div>
+        <div class="p-desc">Go 语言实现的小型工具集 —— 日常构建中的即用即取零件盒。</div>
+        <div class="p-stack"><span>Go</span></div>
+        <div class="p-go">github.com/monikalnbo/Lcode ↗</div>
+      </a>
+
+      <a class="pcard rv-row" href="https://github.com/monikalnbo/eighth-summer" target="_blank" rel="noopener">
+        <div class="p-name">eighth-summer/ <span class="p-status wip">开源</span></div>
+        <div class="p-desc">第八个夏天 —— Rust 实验项目。</div>
+        <div class="p-stack"><span>Rust</span></div>
+        <div class="p-go">github.com/monikalnbo/eighth-summer ↗</div>
+      </a>
+
+      <div class="pcard rv-row">
+        <div class="p-name">this_site.html <span class="p-status run">本页</span></div>
+        <div class="p-desc">个人站与全部子页面 —— 与 Agent 协作完成,香槟金 CRT 终端风,零构建静态实现。</div>
+        <div class="p-stack"><span>HTML/CSS/JS</span><span>无框架</span></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>内部服务</b> · 不对外公开</span>
+    <div class="pcards">
+      <div class="pcard rv-row">
+        <div class="p-name">hermes-bridge/ <span class="p-status lock">🔒 内部</span></div>
+        <div class="p-desc">消息与自动化桥 —— 多平台消息路由、定时任务调度、内容推送中枢;仅在内部网络暴露。</div>
+        <div class="p-stack"><span>TypeScript</span><span>内部网络</span></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="p-foot">
+  <a href="/me/skills.html">« 技能体系</a>·<a href="/me/">总览</a>·<a href="/me/links.html">链接外联 »</a>
+  <p>© 2026 Lnbo</p>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
+  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
+  var prog=document.getElementById('prog');
+  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
+    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+})();
+</script>
+</body>
+</html>

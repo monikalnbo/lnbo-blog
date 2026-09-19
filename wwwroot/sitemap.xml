@@ -10,4 +10,10 @@
 <url><loc>https://lnboself.cn/blog/posts/hermes.html</loc><lastmod>2026-08-15</lastmod></url>
 <url><loc>https://lnboself.cn/blog/posts/codex-guonei-install.html</loc><lastmod>2026-08-10</lastmod></url>
 <url><loc>https://lnboself.cn/blog/posts/codex-tutorial.html</loc><lastmod>2025-09-16</lastmod></url>
+<url><loc>https://self.lnboself.cn/me/</loc><priority>0.8</priority></url>
+<url><loc>https://self.lnboself.cn/me/about.html</loc><priority>0.6</priority></url>
+<url><loc>https://self.lnboself.cn/me/projects.html</loc><priority>0.6</priority></url>
+<url><loc>https://self.lnboself.cn/me/kaf.html</loc><priority>0.5</priority></url>
+<url><loc>https://self.lnboself.cn/me/links.html</loc><priority>0.4</priority></url>
+<url><loc>https://self.lnboself.cn/me/logs.html</loc><priority>0.3</priority></url>
 </urlset>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>关于我 · Lnbo</title>
+<meta name="description" content="Lnbo — 独立开发者 · AI 工程化与自动化 · 与 Agent 协作的工作方式 · 数据自主">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+<link rel="stylesheet" href="/me/assets/subnav.css">
+</head>
+<body>
+<div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
+
+<nav id="subnav">
+  <span class="crumb">lnbo@server:<b>~/me/</b></span>
+  <a href="/me/">总览</a>
+  <a class="on" href="/me/about.html">关于</a>
+  <a href="/me/skills.html">技能</a>
+  <a href="/me/projects.html">项目</a>
+  <a href="/me/links.html">链接</a>
+  <a href="/me/logs.html">日志</a>
+  <a href="/me/kaf.html">花譜</a>
+  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
+</nav>
+
+<div class="wrap">
+
+  <header class="p-head">
+    <div class="p-cmd">$ cat ~/about.md</div>
+    <h1 class="p-title">关于我</h1>
+    <p class="p-desc">独立开发者,专注于 AI 工程化与自动化实践;独立运营自托管服务器体系;一名観測者。</p>
+    <div class="p-meta">
+      <span class="badge"><i></i>阅读约 3 分钟</span>
+      <span class="badge">最后更新 2026-09</span>
+    </div>
+  </header>
+
+  <section class="tui rv">
+    <span class="lbl">— $ cat <b>~/about.md</b></span>
+    <div class="prose">
+      <p>我是 <b>Lnbo</b>,独立开发者,专注于 <span class="hl">AI 工程化与自动化实践</span>。长期与 AI Agent 协同工作:我负责需求定义、任务拆解与质量验收,Agent 负责具体实现,让想法从提出到上线的周期尽可能短。</p>
+      <p>独立运营自托管服务器体系,涵盖博客、知识库、剪藏引擎与消息自动化;重视<span class="hl">数据自主</span>,习惯把核心工具掌握在自己手里——你能看到的这个站,从 Nginx、缓存层到页面本身,都跑在我自己的机器上。</p>
+      <p>工作之外,我是一名<span class="hl">観測者</span> —— 这是虚拟歌手花譜给粉丝的名字。就像这台服务器被持续观测,我也在安静地观测一位歌手的轨迹。详见 <a href="/me/kaf.html">~/me/kaf.html</a>。</p>
+      <p class="sig">Lnbo · 持续构建,持续观测。</p>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— $ ps aux | grep <b>工作方式</b></span>
+    <div class="trio">
+      <div class="card">
+        <h3>我负责(规划层)</h3>
+        <ul>
+          <li>需求定义与边界划分</li>
+          <li>任务拆解 · 上下文投喂</li>
+          <li>质量验收 · 安全审查</li>
+          <li>架构决策与取舍</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Agent 负责(执行层)</h3>
+        <ul>
+          <li>代码实现与调试</li>
+          <li>部署脚本 · 运维执行</li>
+          <li>文档与整理归档</li>
+          <li>重复性任务自动化</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>共同产出</h3>
+        <ul>
+          <li>本站全部页面与后端</li>
+          <li>博客文章的整理流水线</li>
+          <li>剪藏引擎 x2md</li>
+          <li>消息与自动化桥 Hermes</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— $ uptime -s && journalctl <b>站长时间线</b></span>
+    <div class="tl">
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-17 22:07:24</div>
+        <div class="msg"><span class="un">systemd[1]:</span>服务器上线,自托管体系开始构建——从零到博客可访问用了一个晚上。</div>
+      </div>
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-25 03:12:00</div>
+        <div class="msg"><span class="un">data-migration:</span>历史数据迁移完成,<b>0 文件丢失</b>。数据自主的第一步。</div>
+      </div>
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-30</div>
+        <div class="msg"><span class="un">blog[1]:</span>《AI 圈两天两个大瓜》发布——第一篇与 pi 协作完成的文章。</div>
+      </div>
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-09-19</div>
+        <div class="msg"><span class="un">site[1]:</span><span class="info">INFO</span> 个人主页拆分为子页面体系,目录更清晰,内容更明细。</div>
+      </div>
+      <div class="tl-item rv-row">
+        <div class="tl-time">now</div>
+        <div class="msg"><span class="un">kernel:</span>持续构建中……下一站:<a href="/me/projects.html">~/projects/</a></div>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<footer class="p-foot">
+  <a href="/me/">« 总览</a>·<a href="/me/skills.html">技能体系 »</a>
+  <p>© 2026 Lnbo</p>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
+  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
+  var prog=document.getElementById('prog');
+  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
+    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+})();
+</script>
+</body>
+</html>

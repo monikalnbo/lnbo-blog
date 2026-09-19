@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lnbo · 个人主页</title>
+<meta name="description" content="Lnbo — 独立开发者 · AI 工程化与自动化 · 自托管体系 · 観測者">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+<link rel="stylesheet" href="/me/assets/subnav.css">
+</head>
+<body>
+<div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
+
+<nav id="subnav">
+  <span class="crumb">lnbo@server:<b>~/me/</b></span>
+  <a class="on" href="/me/">总览</a>
+  <a href="/me/about.html">关于</a>
+  <a href="/me/skills.html">技能</a>
+  <a href="/me/projects.html">项目</a>
+  <a href="/me/links.html">链接</a>
+  <a href="/me/logs.html">日志</a>
+  <a href="/me/kaf.html">花譜</a>
+  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
+</nav>
+
+<div class="wrap">
+
+  <header class="p-head">
+    <div class="p-cmd">$ whoami &amp;&amp; ls ~/me/ --group-directories-first</div>
+    <h1 class="p-title">Lnbo · 个人主页</h1>
+    <p class="p-desc">独立开发者 · AI 工程化与自动化实践 · 自托管体系运营者 · 一名観測者。这里是我的数字空间总目录——每个子页面是一间独立房间。</p>
+    <div class="p-meta">
+      <span class="badge"><i></i>homepage.service — active (running)</span>
+      <span class="badge">协作: pi · codex · hermes</span>
+      <span class="badge">自 2026-08-17 持续运行</span>
+    </div>
+  </header>
+
+  <div class="g-lbl">— $ ls -la <b>子页面目录</b></div>
+  <div class="pcards rv">
+
+    <a class="pcard" href="/me/about.html">
+      <div class="p-name">about.html <span class="p-status run">关于我</span></div>
+      <div class="p-desc">$ cat ~/about.md —— 我是谁、如何与 Agent 协作、为什么坚持数据自主,以及一段站长时间线。</div>
+      <div class="p-go">cd ~/me/about.html ↗</div>
+    </a>
+
+    <a class="pcard" href="/me/skills.html">
+      <div class="p-name">skills.html <span class="p-status run">技能体系</span></div>
+      <div class="p-desc">$ systemctl --user list-units —— 以 systemd 单元的形式展示技能栈:Agent 协作、自托管、自动化、安全审计。</div>
+      <div class="p-go">cd ~/me/skills.html ↗</div>
+    </a>
+
+    <a class="pcard" href="/me/projects.html">
+      <div class="p-name">projects.html <span class="p-status run">项目明细</span></div>
+      <div class="p-desc">$ ls -la ~/projects/ —— 从博客到剪藏引擎,从匿名信箱到 Rust 游戏引擎,每个项目一张明细卡。</div>
+      <div class="p-go">cd ~/me/projects.html ↗</div>
+    </a>
+
+    <a class="pcard" href="/me/links.html">
+      <div class="p-name">links.html <span class="p-status run">链接外联</span></div>
+      <div class="p-desc">$ cat ~/links.txt —— X / GitHub / 私人数字空间,以及本站全部入口的快速通道。</div>
+      <div class="p-go">cd ~/me/links.html ↗</div>
+    </a>
+
+    <a class="pcard" href="/me/logs.html">
+      <div class="p-name">logs.html <span class="p-status wip">运行日志</span></div>
+      <div class="p-desc">$ journalctl -u homepage —— 服务器大事记:从上线、数据迁移到博客发布与个人页重组的完整时间线。</div>
+      <div class="p-go">cd ~/me/logs.html ↗</div>
+    </a>
+
+    <a class="pcard" href="/me/kaf.html">
+      <div class="p-name">kaf.html <span class="p-status run">花譜</span></div>
+      <div class="p-desc">$ wiki 花譜 —— 我的観測对象:虚拟歌手花譜(かふ),気声唱法、神椿工作室、V.W.P 与観測者们。</div>
+      <div class="p-go">cd ~/me/kaf.html ↗</div>
+    </a>
+
+  </div>
+
+  <section class="tui rv">
+    <span class="lbl">— $ systemctl status homepage</span>
+    <div class="st-line" style="margin-bottom:8px"><span class="k">Loaded:</span><span class="v">loaded (/etc/systemd/system/homepage.service; <span style="color:var(--amber)">enabled</span>)</span></div>
+    <div class="st-line" style="margin-bottom:8px"><span class="k">Active:</span><span class="v g">active (running)</span></div>
+    <div class="st-line" style="margin-bottom:8px"><span class="k">Docs:</span><span class="v">blog → <a href="/blog/">/blog</a> · 站内导航 → <a href="/">/</a></span></div>
+    <div class="st-line"><span class="k">Status:</span><span class="v q">"持续构建,持续观测。"</span></div>
+  </section>
+
+</div>
+
+<footer class="p-foot">
+  <a href="/">« 服务器导航</a>·<a href="/me/about.html">关于我</a>·<a href="/blog/">博客</a>·<a href="/me/kaf.html">花譜</a>
+  <p>© 2026 Lnbo · 与 Agent 协作构建</p>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
+  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
+  var prog=document.getElementById('prog');
+  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
+    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+})();
+</script>
+</body>
+</html>

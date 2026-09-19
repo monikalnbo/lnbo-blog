@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>链接外联 · Lnbo</title>
+<meta name="description" content="Lnbo 的对外链接 —— X / GitHub / youaregood.cc / 本站入口 / 主服务器">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+<link rel="stylesheet" href="/me/assets/subnav.css">
+</head>
+<body>
+<div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
+
+<nav id="subnav">
+  <span class="crumb">lnbo@server:<b>~/me/</b></span>
+  <a href="/me/">总览</a>
+  <a href="/me/about.html">关于</a>
+  <a href="/me/skills.html">技能</a>
+  <a href="/me/projects.html">项目</a>
+  <a class="on" href="/me/links.html">链接</a>
+  <a href="/me/logs.html">日志</a>
+  <a href="/me/kaf.html">花譜</a>
+  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
+</nav>
+
+<div class="wrap">
+
+  <header class="p-head">
+    <div class="p-cmd">$ cat ~/links.txt</div>
+    <h1 class="p-title">链接外联</h1>
+    <p class="p-desc">找到我的全部渠道——社交、代码、私人空间,以及本站与主服务器的入口。</p>
+    <div class="p-meta">
+      <span class="badge"><i></i>external × 3</span>
+      <span class="badge">本站 × 2</span>
+      <span class="badge">主服务器 × 1</span>
+    </div>
+  </header>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>外部渠道</b> · 互联网上的我</span>
+    <div class="lk-big">
+      <a class="rv-row" href="https://x.com/zhuxiaojian5" target="_blank" rel="noopener">
+        <span class="ic">𝕏</span>
+        <span class="nm">X / Twitter</span>
+        <span class="hd">@zhuxiaojian5</span>
+        <span class="ds">AI 领域长文与日常观察</span>
+      </a>
+      <a class="rv-row" href="https://github.com/monikalnbo" target="_blank" rel="noopener">
+        <span class="ic">⑂</span>
+        <span class="nm">GitHub</span>
+        <span class="hd">@monikalnbo</span>
+        <span class="ds">开源项目与日常构建 —— 博客源码 / 引擎 / 工具集</span>
+      </a>
+      <a class="rv-row" href="http://www.youaregood.cc/" target="_blank" rel="noopener">
+        <span class="ic">✉</span>
+        <span class="nm">youaregood.cc</span>
+        <span class="hd">私人数字空间</span>
+        <span class="ds">匿名信件 · 创意实验室 · 3D 星空 · you are good</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>本站入口</b> · self.lnboself.cn</span>
+    <div class="lk-big">
+      <a class="rv-row" href="/me/">
+        <span class="ic">~/</span>
+        <span class="nm">个人主页</span>
+        <span class="hd">/me/</span>
+        <span class="ds">你现在所在的位置 —— 关于 / 技能 / 项目 / 日志 / 花譜</span>
+      </a>
+      <a class="rv-row" href="/blog/">
+        <span class="ic">✎</span>
+        <span class="nm">Lnbo 日记本</span>
+        <span class="hd">/blog/</span>
+        <span class="ds">博客 —— AI 圈动态、原创整理与剪藏长文</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>主服务器</b> · lnboself.cn(另一台机器)</span>
+    <div class="lk-big">
+      <a class="rv-row" href="https://lnboself.cn/" target="_blank" rel="noopener">
+        <span class="ic">⌘</span>
+        <span class="nm">主服务器导航</span>
+        <span class="hd">https://lnboself.cn/</span>
+        <span class="ds">103.205.240.33 —— 那台机器上部署的全部服务入口</span>
+      </a>
+    </div>
+  </section>
+
+</div>
+
+<footer class="p-foot">
+  <a href="/me/projects.html">« 项目明细</a>·<a href="/me/">总览</a>·<a href="/me/logs.html">运行日志 »</a>
+  <p>© 2026 Lnbo</p>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
+  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
+  var prog=document.getElementById('prog');
+  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
+    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+})();
+</script>
+</body>
+</html>

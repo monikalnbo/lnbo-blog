@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>技能体系 · Lnbo</title>
+<meta name="description" content="Lnbo 的技能体系 —— Agent 协作 · 自托管 · 自动化 · 安全,以 systemd 单元呈现">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+<link rel="stylesheet" href="/me/assets/subnav.css">
+</head>
+<body>
+<div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
+
+<nav id="subnav">
+  <span class="crumb">lnbo@server:<b>~/me/</b></span>
+  <a href="/me/">总览</a>
+  <a href="/me/about.html">关于</a>
+  <a class="on" href="/me/skills.html">技能</a>
+  <a href="/me/projects.html">项目</a>
+  <a href="/me/links.html">链接</a>
+  <a href="/me/logs.html">日志</a>
+  <a href="/me/kaf.html">花譜</a>
+  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
+</nav>
+
+<div class="wrap">
+
+  <header class="p-head">
+    <div class="p-cmd">$ systemctl --user list-units --all --no-pager</div>
+    <h1 class="p-title">技能体系</h1>
+    <p class="p-desc">技能即服务。每个单元对应一块能力域,按「协作 · 托管 · 自动化 · 安全」四层编组,全部处于稳定运行状态。</p>
+    <div class="p-meta">
+      <span class="badge"><i></i>5 units loaded</span>
+      <span class="badge">4 groups</span>
+    </div>
+  </header>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>ui-layer 协作层</b> · 与 Agent 协调干活</span>
+    <div class="units">
+      <div class="u-row"><span>UNIT</span><span>ACTIVE</span><span>SUB</span><span>DESCRIPTION</span></div>
+      <div class="u-row rv-row">
+        <span class="u-name">ai-agents<span class="ext">.service</span></span>
+        <span class="u-act">active</span><span class="u-sub">running</span>
+        <span class="u-desc">pi / Codex / Hermes —— 需求拆解、任务编排与 Agent 验收的主力单元;长期人机协作流水线</span>
+      </div>
+      <div class="u-row rv-row">
+        <span class="u-name">prompt-eng<span class="ext">.service</span></span>
+        <span class="u-act">active</span><span class="u-sub">running</span>
+        <span class="u-desc">上下文工程 —— 给 Agent 投喂恰当的背景、边界与验收标准,让一次对话产出可用结果</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>infra-layer 自托管层</b> · 数据自主</span>
+    <div class="units">
+      <div class="u-row"><span>UNIT</span><span>ACTIVE</span><span>SUB</span><span>DESCRIPTION</span></div>
+      <div class="u-row rv-row">
+        <span class="u-name">selfhost<span class="ext">.stack</span></span>
+        <span class="u-act">active</span><span class="u-sub">running</span>
+        <span class="u-desc">nginx · docker · xray · cloudflared · bt-panel 全家桶 —— 从域名解析到 TLS 的完整链路自主可控</span>
+      </div>
+      <div class="u-row rv-row">
+        <span class="u-name">x2md<span class="ext">.service</span></span>
+        <span class="u-act">active</span><span class="u-sub">running</span>
+        <span class="u-desc">网页 → Markdown 剪藏引擎,本站博客的动力来源;自建用户 / 红心 / 评论 API,零第三方依赖</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>auto-layer 自动化层</b> · 让机器干活</span>
+    <div class="units">
+      <div class="u-row"><span>UNIT</span><span>ACTIVE</span><span>SUB</span><span>DESCRIPTION</span></div>
+      <div class="u-row rv-row">
+        <span class="u-name">automation<span class="ext">.timer</span></span>
+        <span class="u-act">active</span><span class="u-sub">waiting</span>
+        <span class="u-desc">bb-browser 定时任务 · hermes 消息桥 · 定时推送 —— 定时唤醒、按计划执行、结果回执</span>
+      </div>
+      <div class="u-row rv-row">
+        <span class="u-name">deploy<span class="ext">.service</span></span>
+        <span class="u-act">active</span><span class="u-sub">running</span>
+        <span class="u-desc">git pull → 构建 → 同步 webroot → reload 一条龙;本站个人页与博客都走这条流水线发布</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>sec-layer 安全层</b> · 底线思维</span>
+    <div class="units">
+      <div class="u-row"><span>UNIT</span><span>ACTIVE</span><span>SUB</span><span>DESCRIPTION</span></div>
+      <div class="u-row rv-row">
+        <span class="u-name">security-audit<span class="ext">.service</span></span>
+        <span class="u-act">active</span><span class="u-sub">running</span>
+        <span class="u-desc">lynis 加固 · 提权审计 · 访问日志分析;密钥最小权限、文件权限收敛、敏感路径一律 403</span>
+      </div>
+    </div>
+    <div class="u-foot">以上单元均在稳定运行中 —— $ systemctl --user status &lt;unit&gt; 查看任一单元详情。</div>
+  </section>
+
+</div>
+
+<footer class="p-foot">
+  <a href="/me/about.html">« 关于我</a>·<a href="/me/">总览</a>·<a href="/me/projects.html">项目明细 »</a>
+  <p>© 2026 Lnbo</p>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
+  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
+  var prog=document.getElementById('prog');
+  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
+    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+})();
+</script>
+</body>
+</html>

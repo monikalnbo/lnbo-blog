@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>运行日志 · Lnbo</title>
+<meta name="description" content="Lnbo 服务器运行日志 —— 上线以来的大事记时间线">
+<meta name="theme-color" content="#0b0907">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%230b0907'/%3E%3Crect x='3' y='3' width='6' height='10' fill='%23e9b872'/%3E%3Crect x='11' y='10' width='3' height='3' fill='%23a3b58c'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/css/lnbo.css">
+<link rel="stylesheet" href="/me/assets/subnav.css">
+</head>
+<body>
+<div id="amb"></div><div id="grain"></div><div id="beam"></div><div id="scan"></div><div id="vig"></div><div id="prog"></div>
+
+<nav id="subnav">
+  <span class="crumb">lnbo@server:<b>~/me/</b></span>
+  <a href="/me/">总览</a>
+  <a href="/me/about.html">关于</a>
+  <a href="/me/skills.html">技能</a>
+  <a href="/me/projects.html">项目</a>
+  <a href="/me/links.html">链接</a>
+  <a class="on" href="/me/logs.html">日志</a>
+  <a href="/me/kaf.html">花譜</a>
+  <span class="ext"><a href="/">导航</a><a href="/blog/">博客</a></span>
+</nav>
+
+<div class="wrap">
+
+  <header class="p-head">
+    <div class="p-cmd">$ journalctl -u homepage --no-pager -o short-iso</div>
+    <h1 class="p-title">运行日志</h1>
+    <p class="p-desc">服务器大事记——从上线到今天的完整时间线,只记里程碑,不记流水账。</p>
+    <div class="p-meta">
+      <span class="badge"><i></i>journal active</span>
+      <span class="badge">自 2026-08-17</span>
+    </div>
+  </header>
+
+  <section class="tui rv">
+    <span class="lbl">— <b>system 日志</b> · 里程碑</span>
+    <div class="tl">
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-17 22:07:24</div>
+        <div class="msg"><span class="un">systemd[1]:</span>服务器上线,自托管体系开始构建。<b>第一天:系统加固、nginx、域名解析全部就位。</b></div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-25 03:12:00</div>
+        <div class="msg"><span class="un">data-migration:</span>历史数据迁移完成,<b>0 文件丢失</b> —— 自托管替换 SaaS 服务的关键一步。</div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-30 21:40:00</div>
+        <div class="msg"><span class="un">blog[1]:</span>《AI 圈两天两个大瓜》发布 —— 与 pi 协作完成的第一篇长文。</div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-08-30 23:25:14</div>
+        <div class="msg"><span class="un">kb[1]:</span>Hermes 研究系列 ×9 章 · Codex 教程 ×4 篇整理入库。</div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-09-19 20:56</div>
+        <div class="msg"><span class="un">deploy[1]:</span><span class="info">INFO</span> 本站(self.lnboself.cn)接入 GitHub 仓库自动同步 —— git pull 即发布。</div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-09-19 21:00</div>
+        <div class="msg"><span class="un">site[1]:</span><span class="info">INFO</span> 个人主页正式上线,单页形态。</div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">2026-09-19</div>
+        <div class="msg"><span class="un">site[1]:</span><span class="info">INFO</span> 个人主页拆分为子页面体系(总览/关于/技能/项目/链接/日志/花譜);导航页聚焦本机页面 + 主服务器入口。</div>
+      </div>
+
+      <div class="tl-item rv-row">
+        <div class="tl-time">now</div>
+        <div class="msg"><span class="un">kernel:</span>系统持续运行中……下一条日志,由下一个想法触发。</div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<footer class="p-foot">
+  <a href="/me/links.html">« 链接外联</a>·<a href="/me/">总览</a>·<a href="/me/kaf.html">花譜 »</a>
+  <p>© 2026 Lnbo</p>
+</footer>
+
+<script>
+(function(){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}})},{threshold:.1});
+  document.querySelectorAll('.rv,.rv-row').forEach(function(el){io.observe(el)});
+  var prog=document.getElementById('prog');
+  if(prog)addEventListener('scroll',function(){var h=document.documentElement;
+    prog.style.width=(h.scrollTop/(h.scrollHeight-h.clientHeight)*100)+'%'},{passive:true});
+})();
+</script>
+</body>
+</html>
