@@ -85,6 +85,7 @@ a.card{display:block;position:relative;overflow:hidden;border-radius:14px;paddin
   animation:rise .8s cubic-bezier(.2,.7,.2,1) both}
 section:nth-of-type(1) a.card:nth-child(1){animation-delay:.34s}
 section:nth-of-type(1) a.card:nth-child(2){animation-delay:.46s}
+section:nth-of-type(1) a.card:nth-child(3){animation-delay:.58s}
 section:nth-of-type(2) a.card{animation-delay:.6s}
 a.card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .35s;
   background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(167,139,250,.13),transparent 65%)}

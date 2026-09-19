@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>文件传输 · Lnbo</title>
+<meta name="description" content="密钥配对文件传输 · 上传生成密钥 · 凭密钥接收 · 8 小时自动销毁">
+<meta name="theme-color" content="#070312">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23070312'/%3E%3Cpath d='M2 8h9M8 3l5 5-5 5' stroke='%23a78bfa' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="/t/assets/t.css">
+</head>
+<body>
+<div id="amb"></div><div id="vig"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="status"><span class="dot"></span>TRANSFER · 8H 自毁</div>
+    <h1>密钥文件传输</h1>
+    <p class="sub">上传生成密钥 → 凭密钥接收 · 分片传输 · 到期即毁</p>
+    <nav class="topnav">
+      <a href="/">« 服务器导航</a><a href="/me/">个人主页</a><a href="/blog/">博客</a>
+    </nav>
+  </header>
+
+  <div class="tabs">
+    <button class="tab on" id="tabSend" onclick="switchTab('send')">⇡ 发送文件</button>
+    <button class="tab" id="tabRecv" onclick="switchTab('recv')">⇣ 密钥接收</button>
+  </div>
+
+  <!-- ═══════ 发送 ═══════ -->
+  <div class="panel" id="paneSend">
+    <div class="lbl">— 选择接收模式</div>
+    <div class="modes">
+      <div class="mode on" id="mOnce" onclick="setMode('once')">
+        <div class="m-name">👤 单人领取</div>
+        <div class="m-desc">仅第一位领取者可下载全部文件,他人领取后失效</div>
+      </div>
+      <div class="mode" id="mMany" onclick="setMode('many')">
+        <div class="m-name">👥 多人领取</div>
+        <div class="m-desc">8 小时内任何持密钥者均可下载</div>
+      </div>
+    </div>
+
+    <div class="lbl">— 选择文件(可多选,单文件 ≤ 500MB,最多 20 个)</div>
+    <div class="drop" id="drop">
+      <span class="big">⚡</span>
+      拖拽文件到此处,或点击选择
+      <br><small>分片传输 · 断点续传不占内存</small>
+    </div>
+    <input type="file" id="fpick" multiple hidden>
+    <div class="flist" id="flist"></div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn" id="upBtn" onclick="startUpload()" disabled>⇧ 开始上传</button>
+      <button class="btn ghost" onclick="resetSend()">清空</button>
+    </div>
+    <div class="msg" id="sMsg"></div>
+
+    <div class="keybox" id="keybox" style="display:none;margin-top:20px">
+      <div class="lbl" style="justify-content:center">— 传输密钥 —</div>
+      <div class="k" id="keyText">----</div>
+      <div class="hint">把密钥发给接收方,在「密钥接收」页签输入即可取件</div>
+      <div class="cd" id="keyCd">剩余 8:00:00</div>
+      <div class="kact">
+        <button class="btn" onclick="copyKey()">复制密钥</button>
+        <button class="btn ghost" onclick="copyLink()">复制链接</button>
+        <button class="btn danger" onclick="destroyKey()">立即销毁</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ 接收 ═══════ -->
+  <div class="panel" id="paneRecv" style="display:none">
+    <div class="lbl">— 输入传输密钥</div>
+    <div class="kinput">
+      <input id="kInput" maxlength="9" placeholder="XXXX-XXXX" spellcheck="false" autocapitalize="characters">
+      <button class="btn" onclick="fetchList()">取件</button>
+    </div>
+    <div class="msg" id="rMsg"></div>
+
+    <div id="claimBox" style="display:none;margin-top:16px">
+      <div class="lbl">— 单人模式 · 领取确认</div>
+      <p style="color:var(--muted);font-size:13px;margin-bottom:12px">
+        该密钥为「单人领取」模式:领取后密钥将绑定给你,其他接收者无法再取。确认领取?</p>
+      <button class="btn" onclick="claimKey()">🔒 领取并绑定</button>
+    </div>
+
+    <div id="rFiles" style="margin-top:16px"></div>
+    <div class="meta-line" id="rMeta" style="display:none"></div>
+  </div>
+
+  <footer>
+    <div>文件 8 小时后自动从磁盘销毁 · 服务端内存占用恒定(64KB 分片)</div>
+    <div>© Lnbo · <a href="/">self.lnboself.cn</a></div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+'use strict';
+var API='/t/api/', CH=4*1024*1024, mode='once', files=[], uploading=false, currentKey=null, expireAt=0;
+
+/* ── 工具 ── */
+window.switchTab=function(t){
+  document.getElementById('tabSend').classList.toggle('on',t==='send');
+  document.getElementById('tabRecv').classList.toggle('on',t==='recv');
+  document.getElementById('paneSend').style.display=t==='send'?'':'none';
+  document.getElementById('paneRecv').style.display=t==='recv'?'':'none';
+};
+window.setMode=function(m){mode=m;
+  document.getElementById('mOnce').classList.toggle('on',m==='once');
+  document.getElementById('mMany').classList.toggle('on',m==='many');
+};
+function fmtSize(n){if(n<1024)return n+' B';var u=['KB','MB','GB'],i=-1;
+  do{n/=1024;i++}while(n>=1024&&i<2);return n.toFixed(n<10?1:0)+' '+u[i]}
+function fmtCd(s){s=Math.max(0,s);var h=Math.floor(s/3600),m=Math.floor(s%3600/60);
+  return h+':'+String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function msg(id,text,cls){var el=document.getElementById(id);
+  el.textContent=text;el.className='msg show '+(cls||'err')}
+function clearMsg(id){document.getElementById(id).className='msg'}
+function api(path,opts){return fetch(API+path,opts).then(function(r){
+  return r.json().catch(function(){return{error:'HTTP '+r.status}}).then(function(j){
+    if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j})})}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+
+/* ── 文件选择 ── */
+var drop=document.getElementById('drop'),fpick=document.getElementById('fpick');
+drop.onclick=function(){fpick.click()};
+fpick.onchange=function(){addFiles(fpick.files);fpick.value=''};
+['dragover','dragenter'].forEach(function(e){drop.addEventListener(e,function(ev){
+  ev.preventDefault();drop.classList.add('over')})});
+['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){
+  ev.preventDefault();drop.classList.remove('over')})});
+drop.addEventListener('drop',function(ev){addFiles(ev.dataTransfer.files)});
+function addFiles(list){
+  Array.prototype.forEach.call(list,function(f){
+    if(files.length>=20){msg('sMsg','最多 20 个文件');return}
+    if(f.size>500*1024*1024){msg('sMsg','「'+esc(f.name)+'」超过 500MB 上限');return}
+    files.push({f:f,st:'wait',prog:0});renderList()});
+  clearMsg('sMsg');
+}
+function renderList(){
+  var h='';
+  files.forEach(function(it,i){
+    var pct=it.st==='done'?'100%':(it.f.size?Math.floor(it.prog/it.f.size*100):100)+'%';
+    h+='<div class="fitem"><span class="f-n">'+esc(it.f.name)+'</span>'
+      +'<span class="f-s">'+fmtSize(it.f.size)+'</span>'
+      +'<span class="f-st '+(it.st==='done'?'ok':it.st==='err'?'err':'')+'">'
+      +(it.st==='up'?'上传中 '+pct:it.st==='done'?'✓ 完成':it.st==='err'?'✕ 失败':'待上传')+'</span>'
+      +(uploading?'':'<button class="f-x" onclick="rmFile('+i+')">×</button>')
+      +'<div class="bar" style="flex-basis:100%"><i style="width:'+pct+'"></i></div></div>'});
+  document.getElementById('flist').innerHTML=h;
+  document.getElementById('upBtn').disabled=uploading||!files.length;
+}
+window.rmFile=function(i){files.splice(i,1);renderList()};
+window.resetSend=function(){if(uploading)return;
+  files=[];document.getElementById('keybox').style.display='none';renderList();clearMsg('sMsg')}
+
+/* ── 分片上传 ── */
+function putChunk(key,id,off,blob){
+  return new Promise(function(res,rej){
+    var x=new XMLHttpRequest();
+    x.open('POST',API+'upload-chunk?key='+key+'&id='+id+'&offset='+off);
+    x.onload=function(){x.status===200?res():rej(new Error(x.responseText||x.status))};
+    x.onerror=function(){rej(new Error('网络中断'))};
+    x.send(blob)});
+}
+function putChunkRetry(key,id,off,blob){
+  return new Promise(function(res,rej){
+    var n=0;function go(){putChunk(key,id,off,blob).then(res).catch(function(e){
+      if(++n<3)setTimeout(go,800*n);else rej(e)})}go()});
+}
+window.startUpload=async function(){
+  if(uploading||!files.length)return;
+  uploading=true;clearMsg('sMsg');renderList();
+  try{
+    var nw=await api('new',{method:'POST',body:JSON.stringify({mode:mode})});
+    currentKey=nw.key;expireAt=Date.now()+nw.expires_in*1000;
+    for(var i=0;i<files.length;i++){
+      var it=files[i];it.st='up';it.prog=0;renderList();
+      var f=it.f;
+      var ini=await api('upload-init?key='+currentKey,{method:'POST',
+        body:JSON.stringify({name:f.name,size:f.size,mime:f.type||'application/octet-stream'})});
+      for(var off=0;off<f.size||f.size===0&&off===0;off+=CH){
+        var blob=f.slice(off,Math.min(off+CH,f.size));
+        await putChunkRetry(currentKey,ini.id,off,blob);
+        it.prog=off+blob.size;renderList();
+        if(f.size===0)break;
+      }
+      await api('upload-done?key='+currentKey+'&id='+ini.id,{method:'POST'});
+      it.st='done';renderList();
+    }
+    document.getElementById('keyText').textContent=currentKey;
+    document.getElementById('keybox').style.display='';
+    msg('sMsg','上传完成 ✓ 密钥已生成,有效期 8 小时','ok');
+  }catch(e){msg('sMsg','上传失败:'+e.message);files.forEach(function(it){if(it.st==='up')it.st='err'});}
+  uploading=false;renderList();
+};
+
+/* ── 密钥展示 ── */
+setInterval(function(){
+  if(!currentKey)return;
+  var el=document.getElementById('keyCd');
+  var s=Math.floor((expireAt-Date.now())/1000);
+  el.textContent=s>0?('剩余 '+fmtCd(s)+' 后自动销毁'):'已过期销毁';
+},1000);
+window.copyKey=function(){navigator.clipboard.writeText(currentKey).then(function(){
+  msg('sMsg','密钥已复制到剪贴板','ok')})};
+window.copyLink=function(){navigator.clipboard.writeText(location.origin+'/t/?k='+currentKey).then(function(){
+  msg('sMsg','取件链接已复制(含密钥,注意保密)','ok')})};
+window.destroyKey=async function(){
+  if(!currentKey)return;
+  if(!confirm('确认立即销毁密钥 '+currentKey+' 及其全部文件?'))return;
+  try{await api('destroy?key='+currentKey,{method:'POST'});
+    msg('sMsg','已销毁 ✓','ok');
+    document.getElementById('keybox').style.display='none';currentKey=null;
+  }catch(e){msg('sMsg',e.message)}
+};
+
+/* ── 接收 ── */
+function normK(v){v=(v||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+  return /^[A-Z2-9]{8}$/.test(v)?v.slice(0,4)+'-'+v.slice(4):null}
+window.fetchList=async function(){
+  clearMsg('rMsg');
+  var raw=document.getElementById('kInput').value;
+  var k=normK(raw);
+  if(!k){msg('rMsg','密钥格式应为 XXXX-XXXX');return}
+  var claim=localStorage.getItem('tclaim_'+k)||'';
+  var j;
+  try{
+    j=await api('list?key='+k+(claim?'&claim='+claim:''));
+  }catch(e){
+    if(e.message.indexOf('已由其他接收者')>=0){msg('rMsg','该密钥已由其他接收者领取');return}
+    msg('rMsg',e.message);return;
+  }
+  var rc=document.getElementById('claimBox');
+  rc.style.display=(j.mode==='once'&&!j.claimed_by_me)?'':'none';
+  var h='<div class="lbl">— 文件清单('+j.files.length+')</div><div class="flist">';
+  j.files.forEach(function(f){
+    var url=API+'file?key='+k+'&id='+f.id+(claim?'&claim='+claim:'');
+    h+='<div class="dl-row"><span class="f-n">'+esc(f.name)+'</span>'
+      +'<span class="f-s">'+fmtSize(f.size)+'</span>'
+      +'<a class="btn ghost" style="padding:6px 16px;font-size:12px" href="'+url+'">⇩ 下载</a></div>'});
+  h+='</div>';
+  document.getElementById('rFiles').innerHTML=h;
+  var mt=document.getElementById('rMeta');
+  mt.style.display='flex';
+  mt.innerHTML='<span>模式:'+(j.mode==='once'?'👤 单人':'👥 多人')+'</span>'
+    +'<span id="rCd">剩余 '+fmtCd(j.expires_in)+'</span>';
+  mt.dataset.exp=Date.now()+j.expires_in*1000;
+};
+window.claimKey=async function(){
+  var k=normK(document.getElementById('kInput').value);
+  if(!k)return;
+  try{
+    var j=await api('claim?key='+k,{method:'POST'});
+    localStorage.setItem('tclaim_'+k,j.token);
+    document.getElementById('claimBox').style.display='none';
+    msg('rMsg','领取成功 ✓ 密钥已绑定给你','ok');
+    window.fetchList();
+  }catch(e){msg('rMsg',e.message)}
+};
+setInterval(function(){
+  var mt=document.getElementById('rMeta');
+  if(mt.style.display==='none'||!mt.dataset.exp)return;
+  var s=Math.floor((+mt.dataset.exp-Date.now())/1000);
+  var cd=document.getElementById('rCd');
+  if(cd)cd.textContent=s>0?('剩余 '+fmtCd(s)+' 后自动销毁'):'已过期销毁';
+},1000);
+document.getElementById('kInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter')window.fetchList()});
+
+/* URL ?k= 预填 */
+var qk=new URLSearchParams(location.search).get('k');
+if(qk){switchTab('recv');document.getElementById('kInput').value=qk;window.fetchList()}
+})();
+</script>
+</body>
+</html>
