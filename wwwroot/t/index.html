@@ -238,12 +238,16 @@ window.fetchList=async function(){
   }
   var rc=document.getElementById('claimBox');
   rc.style.display=(j.mode==='once'&&!j.claimed_by_me)?'':'none';
-  var h='<div class="lbl">— 文件清单('+j.files.length+')</div><div class="flist">';
-  j.files.forEach(function(f){
+  recvFiles=j.files;recvKey=k;recvClaim=claim;
+  var h='<div class="lbl">— 文件清单('+j.files.length+')'
+    +'<span style="margin-left:auto;letter-spacing:0;color:var(--dim)">并行 '
+    +'<select id="workers" class="sel"><option>1</option><option selected>2</option><option>4</option><option>8</option></select> 线程</span></div><div class="flist">';
+  j.files.forEach(function(f,idx){
     var url=API+'file?key='+k+'&id='+f.id+(claim?'&claim='+claim:'');
-    h+='<div class="dl-row"><span class="f-n">'+esc(f.name)+'</span>'
+    h+='<div class="dl-row" id="frow'+idx+'"><span class="f-n">'+esc(f.name)+'</span>'
       +'<span class="f-s">'+fmtSize(f.size)+'</span>'
-      +'<a class="btn ghost" style="padding:6px 16px;font-size:12px" href="'+url+'">⇩ 下载</a></div>'});
+      +'<a class="btn ghost" style="padding:6px 14px;font-size:12px" href="'+url+'" title="单线程直链">直链</a>'
+      +'<button class="btn" style="padding:6px 14px;font-size:12px" onclick="dlFile('+idx+')">⇧ 并行下载</button></div>'});
   h+='</div>';
   document.getElementById('rFiles').innerHTML=h;
   var mt=document.getElementById('rMeta');
@@ -262,6 +266,43 @@ window.claimKey=async function(){
     msg('rMsg','领取成功 ✓ 密钥已绑定给你','ok');
     window.fetchList();
   }catch(e){msg('rMsg',e.message)}
+};
+/* ── 并行分片下载 ── */
+var recvFiles=[],recvKey='',recvClaim='';
+function getBuf(url){
+  return new Promise(function(res,rej){
+    var n=0;(function go(){
+      fetch(url).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.arrayBuffer()})
+        .then(res).catch(function(e){if(++n<3)setTimeout(go,600*n);else rej(e)})
+    })()})}
+window.dlFile=async function(idx){
+  var f=recvFiles[idx],row=document.getElementById('frow'+idx),btn=row.querySelector('button');
+  if(!f||btn.disabled)return;btn.disabled=true;
+  var q='key='+recvKey+'&id='+f.id+(recvClaim?'&claim='+recvClaim:'');
+  if(f.size>400*1024*1024){location.href=API+'file?'+q;btn.disabled=false;
+    msg('rMsg','超过 400MB 走单线程直链下载','ok');return}
+  var bar=document.createElement('div');bar.className='bar';bar.style.flexBasis='100%';
+  bar.innerHTML='<i></i>';row.appendChild(bar);var fill=bar.firstChild;
+  var W=Math.max(1,+(document.getElementById('workers').value||2));
+  var CH=4*1024*1024,offs=[];
+  for(var o=0;o<f.size;o+=CH)offs.push([o,Math.min(CH,f.size-o)]);
+  if(!offs.length)offs=[[0,0]];
+  var parts=new Array(offs.length),cur=0,got=0;
+  async function wk(){
+    while(true){var my=cur++;if(my>=offs.length)break;
+      var oo=offs[my];
+      parts[my]=oo[1]?await getBuf(API+'file-chunk?'+q+'&offset='+oo[0]+'&len='+oo[1]):new ArrayBuffer(0);
+      got+=oo[1];var pct=f.size?Math.floor(got/f.size*100):100;
+      btn.textContent='↓ '+pct+'%';fill.style.width=pct+'%'}}
+  try{
+    await Promise.all(Array.from({length:W},function(){return wk()}));
+    var url=URL.createObjectURL(new Blob(parts));
+    var a=document.createElement('a');a.href=url;a.download=f.name;a.click();
+    setTimeout(function(){URL.revokeObjectURL(url)},30000);
+    btn.textContent='✓ 完成';fill.style.width='100%';
+  }catch(e){
+    btn.textContent='⇧ 重试';btn.disabled=false;bar.remove();
+    msg('rMsg','下载失败:'+e.message)}
 };
 setInterval(function(){
   var mt=document.getElementById('rMeta');
