@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#070312">
 <meta name="robots" content="noindex">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23070312'/%3E%3Cpath d='M2 8h9M8 3l5 5-5 5' stroke='%23a78bfa' stroke-width='1.6' fill='none'/%3E%3C/svg%3E">
-<link rel="stylesheet" href="/t/assets/t.css">
+<link rel="stylesheet" href="/t/assets/t.css?v=3">
 </head>
 <body>
 <div id="amb"></div><div id="vig"></div>
@@ -207,10 +207,22 @@ setInterval(function(){
   var s=Math.floor((expireAt-Date.now())/1000);
   el.textContent=s>0?('剩余 '+fmtCd(s)+' 后自动销毁'):'已过期销毁';
 },1000);
-window.copyKey=function(){navigator.clipboard.writeText(currentKey).then(function(){
-  msg('sMsg','密钥已复制到剪贴板','ok')})};
-window.copyLink=function(){navigator.clipboard.writeText(location.origin+'/t/?k='+currentKey).then(function(){
-  msg('sMsg','取件链接已复制(含密钥,注意保密)','ok')})};
+/* 剪贴板:HTTP 下 navigator.clipboard 不存在,用 execCommand 兑底 */
+function copyText(text,okMsg){
+  function fallback(){
+    var ta=document.createElement('textarea');
+    ta.value=text;ta.style.cssText='position:fixed;left:-9999px;opacity:0';
+    document.body.appendChild(ta);ta.focus();ta.select();
+    var ok=false;
+    try{ok=document.execCommand('copy')}catch(e){}
+    document.body.removeChild(ta);
+    ok?msg('sMsg',okMsg,'ok'):msg('sMsg','复制失败,请长按/手动复制密钥')}
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(function(){msg('sMsg',okMsg,'ok')},fallback);
+  else fallback();
+}
+window.copyKey=function(){if(currentKey)copyText(currentKey,'密钥已复制到剪贴板')};
+window.copyLink=function(){if(currentKey)copyText(location.origin+'/t/?k='+currentKey,'取件链接已复制(含密钥,注意保密)')};
 window.destroyKey=async function(){
   if(!currentKey)return;
   if(!confirm('确认立即销毁密钥 '+currentKey+' 及其全部文件?'))return;
