@@ -43,6 +43,8 @@
       </div>
     </div>
 
+    <div id="tsBox" style="display:none;margin:0 0 14px"></div>
+
     <div class="lbl">— 选择文件(可多选,单文件 ≤ 500MB,最多 20 个)</div>
     <div class="drop" id="drop">
       <span class="big">⚡</span>
@@ -102,6 +104,20 @@
 (function(){
 'use strict';
 var API='/t/api/', CH=4*1024*1024, mode='once', files=[], uploading=false, currentKey=null, expireAt=0;
+
+/* Cloudflare Turnstile 人机验证(后端未配置时自动隐藏) */
+var tsOn=false, tsWidget=null;
+fetch(API+'config').then(function(r){return r.json()}).then(function(c){
+  if(!c.ts_on||!c.ts_sitekey)return;
+  tsOn=true;
+  window.tsLoad=function(){
+    var box=document.getElementById('tsBox');box.style.display='';
+    tsWidget=turnstile.render(box,{sitekey:c.ts_sitekey,theme:'dark'});
+  };
+  var s=document.createElement('script');
+  s.src='https://challenges.cloudflare.com/turnstile/v0/api.js?onload=tsLoad&render=explicit';
+  document.head.appendChild(s);
+});
 
 /* ── 工具 ── */
 window.switchTab=function(t){
@@ -175,9 +191,14 @@ function putChunkRetry(key,id,off,blob){
 }
 window.startUpload=async function(){
   if(uploading||!files.length)return;
+  var cf='';
+  if(tsOn){
+    try{cf=turnstile.getResponse(tsWidget)||''}catch(e){cf=''}
+    if(!cf){msg('sMsg','请先完成上方人机验证');return}
+  }
   uploading=true;clearMsg('sMsg');renderList();
   try{
-    var nw=await api('new',{method:'POST',body:JSON.stringify({mode:mode})});
+    var nw=await api('new',{method:'POST',body:JSON.stringify({mode:mode,cf:cf})});
     currentKey=nw.key;expireAt=Date.now()+nw.expires_in*1000;
     for(var i=0;i<files.length;i++){
       var it=files[i];it.st='up';it.prog=0;renderList();
@@ -196,7 +217,9 @@ window.startUpload=async function(){
     document.getElementById('keyText').textContent=currentKey;
     document.getElementById('keybox').style.display='';
     msg('sMsg','上传完成 ✓ 密钥已生成,有效期 8 小时','ok');
-  }catch(e){msg('sMsg','上传失败:'+e.message);files.forEach(function(it){if(it.st==='up')it.st='err'});}
+  }catch(e){msg('sMsg','上传失败:'+e.message);files.forEach(function(it){if(it.st==='up')it.st='err'});
+    if(tsOn&&e.message.indexOf('人机验证')>=0){try{turnstile.reset(tsWidget)}catch(x){}}
+    if(e.message.indexOf('已过期')>=0&&currentKey){msg('sMsg','密钥异常已重建,请重新点上传','err');currentKey=null}}
   uploading=false;renderList();
 };
 
