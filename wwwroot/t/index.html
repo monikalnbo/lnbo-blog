@@ -105,6 +105,18 @@
 'use strict';
 var API='/t/api/', CH=4*1024*1024, mode='once', files=[], uploading=false, currentKey=null, expireAt=0;
 
+/* 下载选路:自动探测中继(lnboself.cn)与直连延迟,快者胜出;失败自动回直连 */
+var DL='/t/api/', RELAY='https://lnboself.cn/t/api/';
+(function probeRelay(){
+  function probe(base){return new Promise(function(res){
+    var t0=Date.now();
+    fetch(base+'config',{cache:'no-store'})
+      .then(function(r){res(r.ok?Date.now()-t0:-1)},function(){res(-1)})})}
+  Promise.all([probe(RELAY),probe(API)]).then(function(r){
+    if(r[0]>=0&&(r[1]<0||r[0]<r[1]))DL=RELAY;
+  });
+})();
+
 /* Cloudflare Turnstile 人机验证(后端未配置时自动隐藏) */
 var tsOn=false, tsWidget=null;
 fetch(API+'config').then(function(r){return r.json()}).then(function(c){
@@ -278,7 +290,7 @@ window.fetchList=async function(){
     +'<span style="margin-left:auto;letter-spacing:0;color:var(--dim)">并行 '
     +'<select id="workers" class="sel"><option>1</option><option selected>2</option><option>4</option><option>8</option></select> 线程</span></div><div class="flist">';
   j.files.forEach(function(f,idx){
-    var url=API+'file?key='+k+'&id='+f.id+(claim?'&claim='+claim:'');
+    var url=DL+'file?key='+k+'&id='+f.id+(claim?'&claim='+claim:'');
     h+='<div class="dl-row" id="frow'+idx+'"><span class="f-n">'+esc(f.name)+'</span>'
       +'<span class="f-s">'+fmtSize(f.size)+'</span>'
       +'<a class="btn ghost" style="padding:6px 14px;font-size:12px" href="'+url+'" title="单线程直链">直链</a>'
@@ -318,9 +330,9 @@ window.dlFile=async function(idx){
   var f=recvFiles[idx],row=document.getElementById('frow'+idx),btn=row.querySelector('button');
   if(!f||btn.disabled)return;btn.disabled=true;
   var q='key='+recvKey+'&id='+f.id+(recvClaim?'&claim='+recvClaim:'');
-  if(f.size>400*1024*1024){location.href=API+'file?'+q;btn.disabled=false;
+  if(f.size>400*1024*1024){location.href=DL+'file?'+q;btn.disabled=false;
     msg('rMsg','超过 400MB 走单线程直链下载','ok');return}
-  if(inAppBrowser()){location.href=API+'file?'+q;btn.disabled=false;
+  if(inAppBrowser()){location.href=DL+'file?'+q;btn.disabled=false;
     msg('rMsg','当前是 App 内嵌浏览器,已切单线程直链;右上角…→用系统浏览器打开本页可解锁并行加速','ok');return}
   var bar=document.createElement('div');bar.className='bar';bar.style.flexBasis='100%';
   bar.innerHTML='<i></i>';row.appendChild(bar);var fill=bar.firstChild;
@@ -332,7 +344,7 @@ window.dlFile=async function(idx){
   async function wk(){
     while(true){var my=cur++;if(my>=offs.length)break;
       var oo=offs[my];
-      parts[my]=oo[1]?await getBuf(API+'file-chunk?'+q+'&offset='+oo[0]+'&len='+oo[1]):new ArrayBuffer(0);
+      parts[my]=oo[1]?await getBuf(DL+'file-chunk?'+q+'&offset='+oo[0]+'&len='+oo[1]):new ArrayBuffer(0);
       got+=oo[1];var pct=f.size?Math.floor(got/f.size*100):100;
       btn.textContent='↓ '+pct+'%';fill.style.width=pct+'%'}}
   try{
@@ -343,6 +355,8 @@ window.dlFile=async function(idx){
     btn.textContent='✓ 完成';fill.style.width='100%';
     msg('rMsg','已下载 ✓「'+f.name+'」已进入浏览器下载列表(手机看通知栏/系统下载管理)','ok');
   }catch(e){
+    if(DL!==API){DL=API;bar.remove();btn.disabled=false;   // 中继不可用 → 秒切直连重试
+      return window.dlFile(idx)}
     btn.textContent='⇧ 重试';btn.disabled=false;bar.remove();
     msg('rMsg','下载失败:'+e.message)}
 };
