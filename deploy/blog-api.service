@@ -1,0 +1,34 @@
+# blog-api.service —— 博客交互 API(用户/红心/收藏/评论/AI问答)
+# 安装: cp deploy/blog-api.service /etc/systemd/system/ && systemctl daemon-reload
+# 启动: systemctl enable --now blog-api
+[Unit]
+Description=Lnbo Blog API (SQLite + self-written cache)
+After=network.target blog-cache.service
+Wants=blog-cache.service
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/lnbo-blog/api
+ExecStart=/usr/bin/python3 /opt/lnbo-blog/api/api.py
+Restart=always
+RestartSec=3
+
+# ── 环境变量(按需修改)────────────────────────────────────
+# 管理员用户名(逗号分隔;首个注册用户登录后即为管理员)
+Environment=BLOG_ADMIN=lnbokaf
+# 自写缓存服务地址(装了本仓库的 blog-cache.service 就不用改;留空=禁用缓存)
+Environment=BLOG_REDIS_URL=redis://127.0.0.1:6379/0
+# 监听端口(nginx 反代指向这里,默认 9540)
+Environment=BLOG_PORT=9540
+# SQLite 数据库路径(默认在 api/ 目录下自动创建)
+#Environment=BLOG_DB=/opt/lnbo-blog/api/blog.db
+# 访客埋点日志(nginx visitors 格式,统计页数据源)
+Environment=BLOG_VISITORS_LOG=/www/wwwlogs/visitors.log
+# 文章目录(AI 问答「全站模式」扫描用)
+Environment=BLOG_POSTS_DIR=/www/wwwroot/site/blog/posts
+# AI 问答(智谱 GLM;不配则 /api/ai/ask 返回开通提示,其余功能不受影响)
+#Environment=ZAI_API_KEY=你的key
+#Environment=BLOG_AI_MODEL=glm-4-flash
+
+[Install]
+WantedBy=multi-user.target

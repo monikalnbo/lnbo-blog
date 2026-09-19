@@ -1,0 +1,19 @@
+# blog-cache.service —— 自写缓存服务端(纯 Python 标准库,RESP2 协议兼容)
+# 零依赖:不需要安装 Redis;协议兼容,将来也可无缝切换真 Redis
+# 安装: cp deploy/blog-cache.service /etc/systemd/system/ && systemctl daemon-reload
+# 启动: systemctl enable --now blog-cache
+[Unit]
+Description=Lnbo Blog Cache Server (self-written, RESP2 compatible)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/lnbo-blog/api
+ExecStart=/usr/bin/python3 /opt/lnbo-blog/api/cache-server.py --port 6379
+Restart=always
+RestartSec=3
+# 内存占用很小(键值常驻,默认上限 5 万键自动 LRU 逐出)
+MemoryMax=256M
+
+[Install]
+WantedBy=multi-user.target

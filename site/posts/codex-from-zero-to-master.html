@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>万字长文｜Codex 从入门到精通 | Lnbo 日记本</title>
+<meta property="og:title" content="万字长文｜Codex 从入门到精通">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Lnbo 日记本">
+<meta property="og:url" content="https://lnboself.cn/blog/posts/codex-from-zero-to-master.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23b4532a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23faf9f7' font-family='Songti SC,SimSun,serif' font-weight='bold'%3E文%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/blog/assets/style.css?v=20260901-2">
+<script defer src="/blog/assets/analytics.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="/blog/"><b>文</b> · Lnbo 日记本</a>
+    <nav><a href="/blog/">首页</a><a href="/blog/about.html">关于</a><a href="/blog/feed.xml" title="RSS 订阅">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+  <article>
+    <div class="meta-published">📅 发布于 2026-08-25</div>
+    >万字长文｜Codex 从入门到精通</h1>
+    <div class="source-box">
+      📌 本文转载自 X（Twitter），版权归原作者 <a href="https://x.com/miles_mazy" target="_blank" rel="noopener">@miles_mazy（Miles Ma）</a> 所有。
+      原文：<a href="https://x.com/miles_mazy/status/2091339513134010554" target="_blank" rel="noopener">https://x.com/miles_mazy/status/2091339513134010554</a>
+    </div>
+<div style="margin:-14px 0 22px"><b style="font-size:13px;color:var(--muted)">🏷️ 标签：</b><span class="tag-chips"><span class="tag-chip">Codex</span><span class="tag-chip">体系入门</span><span class="tag-chip">工作区与权限</span></span></div>
+    <p><img alt="封面" src="/blog/assets/images/HQVi4DkasAAhLPz.jpg" /></p>
+<p>第一次打开 Codex，真正容易卡住的是眼前这些区域分别管什么：项目和任务有什么区别，Local、Worktree、Cloud 该选哪个，Plan 是不是必须开，权限应该给到哪里，Plugins、Skills、MCP 又为什么同时存在。
+这篇教程就从这些基础问题讲起。我们不先做项目，也不拿一个复杂案例拖着你走完全程。先把界面、按钮、工作区和常用能力认清，再判断哪些扩展功能值得接入。
+读完以后，应该可以教会你能独立打开一个正确的目录，建立任务，控制权限，查看改动，并知道什么时候该用 Plan、Skill、Plugin、MCP、Automation 和 /goal。</p>
+<p><img alt="Codex 界面总览" src="/blog/assets/images/HQVhPSYbYAA5cyb.jpg" /></p>
+<h2 id="codex">一、先知道 Codex 到底是什么</h2>
+<p>Codex 是一个能实际操作的 Agent。普通聊天工具主要给出文字回答，Codex 除了回答，还能读取文件、修改代码和文档、运行命令、查看 Git 改动、打开网页、操作应用，并调用已经接入的外部工具。
+所以，交给 Codex 的最好是一件有材料、有边界、有结果的工作。它的基本循环可以写成四步：
+Prompt → Plan → Execute → Verify
+Prompt 是你提出任务，Plan 是它准备怎么做，Execute 是实际读写文件和运行命令，Verify 是检查结果。这里最重要的是最后一步。Codex 说“完成了”，只能说明它结束了当前执行，不能自动证明文件正确、页面能用或者测试已经通过。
+Codex 有五个主要入口。</p>
+<p><img alt="Codex 五个主要入口" src="/blog/assets/images/HQVYC0MbAAAX73o.jpg" /></p>
+<p>小白没有必要同时学习五种入口。已经打开桌面 App，就先把 App 用明白；习惯终端，再补 CLI。Cloud、IDE 和 Chrome 扩展都是为具体场景服务的，不是“越多越专业”。</p>
+<h2 id="codex-app">二、Codex App 的界面从左到右怎么看</h2>
+<p>Codex App 的主体可以分成三块：左侧管理项目和任务，中间处理对话与执行，右侧检查文件改动。不同功能面板会在这三块周围展开，但主逻辑不会变。</p>
+<h3 id="_1">左侧：项目和任务</h3>
+<p>项目（Project）对应一个工作目录。你添加一个网站仓库、文章目录或工具工程，本质上是在告诉 Codex：“这一批文件属于同一项长期工作。”项目决定它默认从哪里读取材料，也决定沙盒通常允许写到哪里。
+任务（Thread、Chat）是项目下面的一次独立对话。一个任务最好只负责一个明确结果，比如“检查这篇文章的结构”“修复登录页报错”“整理昨天的提交记录”。项目可以长期存在，任务应该有结束点。
+左侧常用动作包括：
+添加或切换项目；
+在当前项目下新建任务；
+打开以前的任务继续处理；
+查看正在运行、等待审批或已经结束的任务；
+把一个任务弹出为独立窗口，方便和浏览器或编辑器并排查看。</p>
+<p><img alt="项目与任务管理界面" src="/blog/assets/images/HQVhU2saoAAl4BN.jpg" /></p>
+<p>如果旧任务已经混入很多无关上下文，新需求又完全不同，直接新建任务通常更干净。只是接着修改同一个结果，就留在原任务里，不必为了形式上的“整洁”反复开新对话。</p>
+<h3 id="_2">中间：对话区和输入框</h3>
+<p>中间区域会显示 Codex 的回复、计划、命令、工具调用、审批请求和最终总结。底部输入框不只是聊天框，它也是任务控制台。
+输入框周围常见的功能有：
+发送：提交当前要求；
+停止：中断正在执行的任务；
+模型：选择处理当前任务的模型；
+权限：决定只读、工作区可写还是更高权限；
+附件：加入文件或图片作为上下文；
+语音输入：按住 Ctrl+M 说话，松开后转成文字；
+工作模式：在 Local、Worktree、Cloud 之间选择任务运行的位置。
+执行过程中不必等它彻底结束才说话。发现方向不对，可以直接补充：“只检查，不要修改”“不要安装依赖”“先停在计划阶段”。越早纠偏，浪费的时间越少。</p>
+<h3 id="diff">右侧：Diff 和文件变更</h3>
+<p>右侧 Diff 面板用来查看 Codex 到底改了什么。新增通常以绿色显示，删除通常以红色显示。你可以按文件查看，也可以聚焦某一轮或整个分支的变化。
+Diff 面板的价值不只是“看一眼”。它还能承担审查工作：
+查看所有未提交修改；
+在具体代码行旁添加 inline 评论；
+按文件或改动块暂存、撤销；
+在 App 内完成 commit、push 或创建 Pull Request。
+如果某一行有问题，直接在那一行留下评论，比在输入框里描述“上面那个函数”准确得多。评论写完后，再发一句“处理刚才的 inline 评论，其他部分不要扩大修改”。</p>
+<h2 id="codex_1">三、工作区怎么选，决定了 Codex 能看到什么</h2>
+<p>工作区就是 Codex 当前工作的目录。选错目录，是“找不到文件”“改到别处”“读了太多无关材料”最常见的原因。
+选择时可以用一个很简单的标准：完成这件事所需的文件，能否集中放在一个最小目录里。能，就只打开这个目录。不要为了省一次切换，把整个桌面、个人主目录或一堆无关项目交给 Codex。
+几种常见情况可以这样选：
+只改一个独立项目：打开项目根目录；
+一个仓库里有多个互不相关的应用：可以分别添加为多个 Codex 项目；
+前后端分成相邻目录：以主要目录启动，需要时用额外目录权限补充另一个；
+只想分析，不希望修改：仍然打开正确目录，但把权限设为只读；
+任务要在远端环境执行：选择 Cloud，而不是扩大本地权限。
+在 CLI 中，可以用 --cd 指定工作目录，用 --add-dir 增加额外可写目录：</p>
+<pre><code class="language-bash">codex --cd ~/projects/frontend --add-dir ../backend
+</code></pre>
+<p>这比直接给整台电脑写权限更清楚。边界越小，出现误操作时的影响范围也越小。</p>
+<h2 id="localworktreecloud">四、新建任务时，Local、Worktree、Cloud 怎么选</h2>
+<p>新建任务时最重要的选择之一，是它在哪里工作。</p>
+<h3 id="local">Local：直接改当前目录</h3>
+<p>Local 会在你选中的项目目录里工作。改动会立刻出现在本地文件中，适合绝大多数日常任务：改文档、修一个 Bug、运行测试、整理目录、查看项目结构。
+它的优点是直接，缺点也很直接：你和 Codex 同时修改相同文件时，可能互相干扰。单任务从 Local 开始最省事。</p>
+<h3 id="worktree">Worktree：给任务一份隔离副本</h3>
+<p>Worktree 基于 Git 的 worktree 功能，为任务创建一个独立工作目录。Agent 在里面修改，你正在使用的本地目录不会跟着变化。
+它适合两种情况：同时让多个任务改同一个仓库，或者想让 Codex 试一个改动，又不想马上碰当前分支。任务完成后，可以在 Worktree 中建分支、提交并开 PR，也可以通过 Handoff 把结果移回 Local。
+Worktree 不是每个任务都要开。只改一个小文件、只有一个 Agent 在工作，Local 更短。需要隔离和并行时再用 Worktree。</p>
+<h3 id="cloud">Cloud：把任务交到云端</h3>
+<p>Cloud 会在远端隔离环境里克隆仓库并执行。它适合边界清楚、可以异步等待的任务，比如代码审查、修复明确 Issue、批量重构和跑测试。
+Cloud 的价值在于你不需要守着本机。任务完成后看 Diff，再决定是否合并。需要频繁讨论、依赖本机文件或本地应用的工作，Local 或 Worktree 通常更顺。</p>
+<h2 id="plan">五、Plan 怎么设，什么时候不要设</h2>
+<p>Plan 是执行前的路线。复杂任务里，它能让你提前发现范围过大、顺序不合理、准备安装不必要依赖等问题。简单任务里，Plan 也可能只是多一道形式。
+在 CLI 中可以输入：</p>
+<pre><code>/plan
+</code></pre>
+<p>也可以把要求一起写清楚：</p>
+<pre><code>/plan 先检查当前目录和相关文件，只给出修改计划，不要写文件
+</code></pre>
+<p>在 App 中直接用自然语言也可以：</p>
+<pre><code>先不要修改。请确认你理解的目标、需要查看的文件和准备执行的步骤，等我确认后再动手。
+</code></pre>
+<p>Plan 适合这些情况：任务跨多个文件，修改不可轻易回退，需要先调查原因，或者你还在比较几种实现方式。改标题、查一个报错位置、执行一条确定命令，没有必要强行先列五步计划。
+一份有用的 Plan 至少要回答四个问题：真正要解决什么，准备看哪些材料，准备改哪些地方，最后怎么证明完成。只有“分析需求、开始实现、测试结果、总结”这种模板，信息量很低，可以要求它重写。
+这里还有一个更重要的原则：接到任务先判断真正的问题和最短可靠路径。能直接完成，就不额外搭流程；能复用现有成果，就不从头重做；能修改局部，就不推倒重来；能一条命令解决，就不写脚本；能一个脚本解决，就不建项目。Plan 的作用是帮助选择方法，不是给简单问题增加仪式感。</p>
+<h2 id="_3">六、权限怎么选，审批弹窗怎么看</h2>
+<p>Codex 能读写文件、运行命令，权限不能含糊。常见的沙盒可以理解为三档。</p>
+<p><img alt="权限三档示意" src="/blog/assets/images/HQVYDYaa8AAXHrY.jpg" /></p>
+<p>对小白来说，Workspace-write 足够覆盖大多数工作。要分析时用 Read-only。Full access 不应该为了少点几次确认而打开，更不适合无人值守的定时任务。
+看到审批请求时，先看四件事：它准备执行什么命令，在哪个目录执行，是否需要网络，为什么这一步对当前目标有必要。安装依赖、上传文件、删除数据、修改账号设置、对外发布和访问凭据，都值得停下来确认。
+/permissions 可以查看和调整当前安全模式。CLI 里也可以在启动时指定：</p>
+<pre><code class="language-bash">codex --sandbox read-only
+codex --full-auto
+</code></pre>
+<p>--full-auto 适合在工作区内低摩擦执行，它不等于整机完全开放。--yolo 会跳过审批和沙盒，不适合作为日常默认项。</p>
+<h2 id="_4">七、几个最基础、也最容易被忽略的工具</h2>
+<h3 id="_5">集成终端</h3>
+<p>每个 App 任务都有自己的终端，macOS 中可用 Cmd+J 显示。终端目录会跟随任务：Local 任务打开本地项目，Worktree 任务打开对应的隔离目录。
+终端可以用来运行测试、启动开发服务、查看 git status，也可以检查 Codex 的修改。更方便的一点是，Codex 能读取终端当前输出。看到报错时，可以直接说“检查终端里的错误”，不必整段复制。</p>
+<p><img alt="集成终端" src="/blog/assets/images/HQVheC0awAAFZsw.jpg" /></p>
+<h3 id="in-app-browser">In-App Browser</h3>
+<p>内置浏览器适合打开本地页面并检查界面。你可以在页面元素上直接留下带位置的评论，例如“这里的字号小一点”“这个按钮和上面的输入框对齐”。这种反馈比纯文字描述准确。
+内置浏览器不负责复用你已经登录的 Chrome 会话。需要操作 Gmail、Salesforce、LinkedIn 或内部系统时，用 Chrome 扩展。</p>
+<h3 id="computer-use">Computer Use</h3>
+<p>Computer Use 让 Codex 操作桌面应用，包括点击、输入、拖拽、读屏幕和使用快捷键。适合没有 API 的旧工具、批量录入、文件整理和跨应用流程。
+它能操作，不代表任何操作都该自动化。涉及付款、发布、删除、账号权限和对外发送时，仍然应该把最终确认留给人。</p>
+<h3 id="_6">图片输入和图像生成</h3>
+<p>图片可以直接拖进输入框作为上下文，也可以在 CLI 启动时附带：
+bash
+codex -i screenshot.png "检查这个页面为什么错位"
+图像生成适合制作界面素材、概念图和文档插图。它是一项可选能力，不是每个任务都需要的步骤。</p>
+<h3 id="memory">Memory</h3>
+<p>Memory 用来保留你反复表达过的偏好和纠正。例如项目固定使用哪套测试工具、提交信息采用什么格式、某类文件应该放在哪里。它适合长期重复协作。
+重要规则仍然建议写进 AGENTS.md。Memory 更像逐渐积累的隐式偏好，AGENTS.md 是明确可见、可以审查的项目规则。</p>
+<h2 id="cli">八、CLI 里最常用的命令和按键</h2>
+<p>CLI 不是必须项，但它把 Codex 的能力暴露得最直接。安装后，在项目目录输入 codex 即可进入全屏 TUI。
+日常最常用的三个子命令是：</p>
+<pre><code class="language-bash">codex                 # 启动交互界面
+codex exec &quot;任务&quot;     # 非交互执行一次任务
+codex resume --last   # 继续最近的会话
+</code></pre>
+<p>进入 TUI 后，输入 / 可以查看特殊命令。</p>
+<p><img alt="CLI TUI 特殊命令" src="/blog/assets/images/HQVYEC_bEAAeBNs.jpg" /></p>
+<p>输入框还有几组很实用的操作：
+输入 @ 搜索并引用工作区文件；
+输入 ! 加命令，可以直接运行 Shell 命令；
+Agent 运行时按 Enter，可以补充当前轮指令；
+Agent 运行时按 Tab，可以排队一条后续要求；
+空输入框连续按两次 Esc，可以回到上一条消息继续编辑；
+Ctrl+L 只清理屏幕，不会清空上下文；
+/clear 才是开始新的对话上下文。
+命令不需要背。先记住 /plan、/review、/diff、/permissions 和 /status，其他用到再查。</p>
+<h2 id="agentsmd-codex">九、AGENTS.md：把长期规则写给 Codex</h2>
+<p>AGENTS.md 是 Codex 进入项目时会读取的规则文件。它适合记录不会随着一次任务结束而消失的信息，例如构建命令、目录结构、代码规范、验收方式和不能做的事情。
+可以先用 /init 生成初稿，再删掉没用的内容。一份面向实际工作的简版可以这样写：</p>
+<pre><code class="language-markdown"># 项目规则
+</code></pre>
+<ul>
+<li>接到任务先判断真正要解决的问题和最短可靠路径。</li>
+<li>优先复用现有文件，能局部修改就不要整套重写。</li>
+<li>修改前先检查相关文件，不要猜目录结构。</li>
+<li>只在当前工作区内写入，不安装无关依赖。</li>
+<li>完成后运行现有检查，并说明已验证和未验证的部分。
+规则要来自真实问题，不要一次写成几十页“公司宪法”。每当 Codex 在同一件事上重复犯错，再补一条具体规则。短而准，比长而全更容易真正执行。</li>
+</ul>
+<h2 id="skillspluginsmcp">十、Skills、Plugins、MCP 到底有什么区别</h2>
+<p>这三个概念经常被混在一起。最简单的区分是：
+Skill 教 Codex 怎么做一类事情；
+Plugin 把一组 Skill、MCP 和连接器打包分发；
+MCP 让 Codex 连接外部工具和数据。</p>
+<h3 id="skills">Skills：可复用的做事方法</h3>
+<p>一个 Skill 本质上是一个目录，核心文件叫 SKILL.md。里面有名称、触发说明和具体步骤，也可以附带脚本、模板和参考资料。
+Skill 有两种调用方式。显式调用是在提示中写 $skill-name；隐式调用是 Codex 根据 Skill 的 description 自动判断。涉及破坏性操作的 Skill，适合关闭隐式触发，只允许手动点名。
+常见的 Skill 可以按用途分成几类：
+文档和内容：长文写作、去模板腔、PDF 或表格处理；
+开发流程：代码审查、发布、处理 Issue、创建 PR；
+视觉与媒体：生成图片、处理视频、制作演示文稿；
+团队规则：某个仓库固定的测试、部署和验收方法；
+研究分析：检索资料、整理数据、输出固定格式报告。
+创建 Skill 可以调用 $skill-creator。个人通用 Skill 放在用户级目录，团队共享 Skill 放在仓库的 .agents/skills/ 中。Skill 越多不代表越好；只有一类工作确实会反复发生，才值得把它固化。</p>
+<h3 id="plugins">Plugins：在应用商店里装一整套能力</h3>
+<p>Plugins 页面是插件入口。在 App 里打开 Plugins，或者在 CLI 输入 /plugins，可以浏览和安装。一个插件可能同时包含多个 Skills、MCP Servers 和 App Connectors，安装后能跨工作区使用。</p>
+<p><img alt="Plugins 插件页面" src="/blog/assets/images/HQVhkOWbsAAev80.jpg" /></p>
+<p>橙皮书列出的代表性插件包括：
+Atlassian Rovo：连接 Jira、Confluence、Bitbucket；
+GitLab Issues：处理 GitLab 中的事项；
+CircleCI、Render：查看构建和部署；
+CodeRabbit：辅助代码审查；
+Microsoft Suite：连接 Word、Excel、Outlook、Teams；
+GitHub、Slack、Google Drive 等连接器：把外部工作内容带进任务。
+安装前先问自己：当前任务是不是反复需要这个系统的数据或动作。只用一次的网站，不一定值得装插件；已有原生功能能完成，也不用为了“生态”再套一层。</p>
+<h3 id="mcp-codex">MCP：给 Codex 接外部工具</h3>
+<p>MCP 可以理解为统一接口。外部服务实现 MCP 后，Codex 就能把它提供的查询和操作当成工具使用。
+常见 MCP 包括：
+OpenAI Docs MCP：查询 OpenAI 文档；
+Context7：读取常用开发库文档；
+Figma MCP：读取设计稿；
+Playwright MCP、Chrome DevTools MCP：控制和检查网页；
+Sentry MCP：读取线上错误；
+GitHub MCP：处理 PR 和 Issue。
+CLI 中可以用 codex mcp add 添加，用 codex mcp list 查看，进入会话后用 /mcp 检查是否连接成功。MCP 可能带来真实外部操作，配置时要注意认证、工具白名单和权限范围。</p>
+<h2 id="automations">十一、Automations 定时任务怎么设</h2>
+<p>Automation 是 Codex App 中的定时任务系统。它适合固定频率检查、未来某个时间执行，以及跨天继续推进的长任务。</p>
+<p><img alt="Automations 定时任务" src="/blog/assets/images/HQVhpCEaEAAtOW2.jpg" /></p>
+<p>在侧边栏进入 Automations 后，设置过程可以压缩成五步：
+选择任务对应的项目；
+写清楚到点后要执行的 Prompt；
+选择时间或重复频率；
+选择 Local 或 Worktree 执行环境；
+检查权限，保存并等待运行。
+定时方式可以分成几类：
+一次性未来任务：例如明天上午生成发布说明；
+固定周期任务：每天、每周或按指定频率检查一次；
+Skill 驱动任务：在 Prompt 中显式调用 $skill-name，按同一方法重复执行；
+持续目标任务：Automation 负责唤醒，/goal 负责记住跨会话目标。
+运行结果会进入 Triage 收件箱。需要你处理的结果留在那里，没有重要发现的运行可以自动归档。对于 Git 仓库，Automation 使用 Worktree 更稳，不会直接打扰正在编辑的目录。
+定时之前，先在普通任务中手动跑一次同样的 Prompt。确认范围、工具、输出和 Diff 都符合预期，再交给无人值守执行。高频 Automation 还会积累 Worktree，需要定期归档不再使用的运行结果。</p>
+<h2 id="goal-planautomation">十二、/goal 和 Plan、Automation 不是一回事</h2>
+<p>这三个功能处理的是不同问题。</p>
+<p><img alt="/goal 与 Plan、Automation 对比" src="/blog/assets/images/HQVYEDNaAAAKRfv.jpg" /></p>
+<p>/goal 适合跨多次会话推进、有明确完成标准的长任务。它可以跨 /clear、对话压缩和会话切换保留状态。普通几分钟任务不需要 /goal，需要你频繁判断的探索任务也不适合强行让它“不做完不停止”。
+一个合理的目标要有可验证的结束条件。例如“把所有测试迁移完成，并让现有测试全部通过”比“持续优化这个项目”更适合 /goal。目标太空，Agent 只会不断寻找新的事情做。
+当 Skill、Plugin、MCP、Automation 和 /goal 同时出现时，可以这样理解：Skill 是操作手册，Plugin 是能力包，MCP 是外部接口，Automation 是闹钟，/goal 是长期任务状态。实际工作不必五个一起上，缺哪一层再补哪一层。</p>
+<h2 id="0-1">十三、从 0 到 1 的实际学习顺序</h2>
+<p>如果你刚开始用 Codex，可以按下面的顺序熟悉，而不是一次装满所有扩展。
+第一阶段只练四件事：选对工作区，新建一个任务，控制 Read-only 与 Workspace-write，学会看 Diff。能独立判断“它改了什么、有没有越界”，基础就已经过关。
+第二阶段加入 Plan、终端和 /review。遇到复杂任务先看计划，完成后自己运行检查，再让独立审查 Agent 看一次改动。
+第三阶段才学习 Worktree 和多任务并行。确实有两个互不依赖的任务时再并行，不要为了看到多个 Agent 同时运行，把一件可以顺手做完的事硬拆成三份。
+第四阶段按真实需求安装扩展。重复工作固化成 Skill，需要外部系统才接 MCP，需要一整套现成能力才装 Plugin，需要定时或跨天运行才开 Automation 和 /goal。
+能否熟练使用 Codex，不取决于装了多少插件，也不取决于每次都写很长的 Prompt。真正的分水岭是：你能不能给它正确的材料和边界，能不能在它执行时及时纠偏，能不能用 Diff、终端、测试和页面判断结果，而不是只看一句“已经完成”。
+最后留一张速查表</p>
+<p><img alt="速查表" src="/blog/assets/images/HQVYEwgakAAfAXZ.jpg" /></p>
+<p><img alt="作者信息" src="/blog/assets/images/HQVifI4aoAAvfPd.jpg" /></p>
+  <div id="interact" data-slug="codex-from-zero-to-master"></div>
+</article>
+</main>
+<footer class="site-footer"><div class="wrap">© 2026 Lnbo 日记本 · 由 X2MD + nginx 驱动</div></footer>
+<script defer src="/blog/assets/interact.js"></script>
+<script defer src="/blog/assets/enhance.js"></script>
+<script defer src="/blog/assets/ai-ask.js"></script>
+</body>
+</html>

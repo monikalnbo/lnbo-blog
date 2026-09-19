@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026年国内Codex安装教程和使用教程：GPT-5.3-Codex完整指南 | Lnbo 日记本</title>
+<meta property="og:title" content="2026年国内Codex安装教程和使用教程：GPT-5.3-Codex完整指南">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Lnbo 日记本">
+<meta property="og:url" content="https://lnboself.cn/blog/posts/codex-guonei-install.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23b4532a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23faf9f7' font-family='Songti SC,SimSun,serif' font-weight='bold'%3E文%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/blog/assets/style.css?v=20260901-2">
+<script defer src="/blog/assets/analytics.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="/blog/"><b>文</b> · Lnbo 日记本</a>
+    <nav><a href="/blog/">首页</a><a href="/blog/about.html">关于</a><a href="/blog/feed.xml" title="RSS 订阅">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+  <article>
+    <div class="meta-published">📅 发布于 2026-08-25</div>
+    >2026年国内Codex安装教程和使用教程：GPT-5.3-Codex完整指南</h1>
+    <div class="source-box">
+      📌 本文转载自知乎，版权归原作者 <a href="https://zhuanlan.zhihu.com/p/2004914542765941622" target="_blank" rel="noopener">小林coding（知乎）</a> 所有。
+      原文：<a href="https://zhuanlan.zhihu.com/p/2004914542765941622" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/2004914542765941622</a>
+    </div>
+<div style="margin:-14px 0 22px"><b style="font-size:13px;color:var(--muted)">🏷️ 标签：</b><span class="tag-chips"><span class="tag-chip">Codex</span><span class="tag-chip">国内安装</span><span class="tag-chip">GPT-5.3</span></span></div>
+    <blockquote>
+<p><strong>本文是最详细的 Codex 安装教程和 Codex 使用教程</strong>,手把手教你如何在国内环境下安装、配置和使用 OpenAI Codex(GPT-5.3-Codex)。无论你是编程新手还是资深开发者,都能通过本教程在 5 分钟内成功上手 Codex。</p>
+</blockquote>
+<h3 id="codex">一、Codex 安装教程前的准备工作</h3>
+<p>最近 OpenAI Codex 非常火,但是国内直接使用还是有门槛。根据我们的 <strong>Codex 使用教程</strong> 实践,国内使用 Codex 以及 Codex CLI 主要是要解决三个核心问题:账号问题、网络环境和工具配置。</p>
+<p>好消息是,OpenAI 最近宣布:<strong>ChatGPT Plus 用户无需 API Key,直接登录就能用 Codex CLI</strong>,这大大降低了使用门槛。</p>
+<p>刚好 GPT-5.3-Codex 新鲜出炉,很多粉丝朋友催我赶紧出一期教程,所以今天我们就来详细讲解 <strong>Codex 安装教程的完整步骤</strong>。</p>
+<p><img alt="配图" src="/blog/assets/images/v2-c07b55fdf277612fb1c069ecff90fbb4.jpg" /></p>
+<p>GPT-5.3-Codex 发布</p>
+<h3 id="11-codex">1.1 Codex 安装教程的前置条件</h3>
+<p>在开始 Codex 安装教程之前,请确保你满足以下三点条件:</p>
+<p><strong>✅条件一:安装 AI 编程工具</strong></p>
+<ul>
+<li>已经安装了任一 AI 编程工具,比如 Cursor/Trae/Qoder/Kiro 等等</li>
+<li>推荐使用 Trae,本 Codex 安装教程将以 Trae 为例进行演示</li>
+</ul>
+<p>✅<strong>条件二:拥有 ChatGPT Plus 账号</strong></p>
+<ul>
+<li>目前 Codex 需要付费才能使用(Plus、Business、Pro 都可以)</li>
+<li>
+<p>🔥如果你还是免费用户,可以通过以下方式升级: </p>
+<ul>
+<li>国内自助升级 ChatGPT Plus 工具:<a href="http://getgpt.pro/i/xiaolincoding2">国内自助升级 ChatGPT Plus 网站</a></li>
+<li>具体的开通教程:<a href="https://www.xiaolincoding.com/other/gotochatgpt.html">国内如何开通订阅ChatGPT Plus会员(支付宝微信代充值亲测有效)</a></li>
+</ul>
+</li>
+</ul>
+<p>✅<strong>条件三:网络环境准备</strong></p>
+<ul>
+<li>具备特殊的网络环境,确保能够访问 OpenAI 服务</li>
+</ul>
+<blockquote>
+<p><strong>提示:</strong>如果你已经满足以上条件,现在就可以开始我们的 Codex 安装教程了。</p>
+</blockquote>
+<h3 id="codex_1">二、Codex 安装教程详细步骤(图文演示)</h3>
+<p>下面进入 <strong>Codex 安装教程</strong> 的核心部分,我们将手把手教你如何安装和配置 OpenAI Codex 插件。</p>
+<h3 id="21-ai-codex">2.1 第一步:在 AI 编程工具中搜索 Codex 插件</h3>
+<p>首先,打开你的 AI 编程工具。本 Codex 安装教程以 Trae 为例进行演示(Trae官网下载🔗:<a href="https://www.trae.cn/?utm_source=advertising&amp;utm_medium=xiaolincoding_ug_cpa&amp;utm_term=hw_trae_xiaolincoding">www.trae.cn</a>)。</p>
+<p><strong>操作步骤:</strong></p>
+<ol>
+<li>点击 Trae 左侧的应用图标(扩展商店)</li>
+<li>在搜索框中输入 <code>codex</code></li>
+<li>按回车键进行搜索</li>
+</ol>
+<p><img alt="配图" src="/blog/assets/images/v2-c51846f3245c7ea378dfe8bc438e30a3.jpg" /></p>
+<h3 id="22-codex">2.2 第二步:安装 Codex 插件并进入登录页面</h3>
+<p>找到 OpenAI Codex 插件后,点击安装按钮。安装完成后,Trae 左侧会出现一个 OpenAI 的图标。</p>
+<p><strong>操作步骤:</strong></p>
+<ol>
+<li>点击左侧新出现的 OpenAI 图标</li>
+<li>进入 Codex 的登录引导页面</li>
+<li>按照新手引导完成初始设置</li>
+</ol>
+<p><img alt="配图" src="/blog/assets/images/v2-e929687e00ce97ca282e89b50f3002ea.jpg" /></p>
+<h3 id="codex-">三、Codex 使用教程 - 登录配置详解</h3>
+<p>完成 Codex 安装教程后,接下来是 <strong>Codex 使用教程</strong> 的关键环节:配置登录。</p>
+<h3 id="31-chatgpt">3.1 选择登录方式:通过 ChatGPT 账号登录</h3>
+<p>Codex 支持通过 ChatGPT Plus 账号直接登录,无需申请 API Key,这是目前最简单的登录方式。</p>
+<p><strong>操作步骤:</strong></p>
+<ol>
+<li>在登录页面选择「通过 ChatGPT 登录」选项</li>
+<li>系统会提示打开浏览器进行授权</li>
+</ol>
+<p><img alt="配图" src="/blog/assets/images/v2-1d6a0b5245fa7576e737ffb5ba403318.jpg" /></p>
+<h3 id="32">3.2 在浏览器中授权登录</h3>
+<p>点击「打开」按钮,系统会在默认浏览器中打开 OpenAI 的授权页面。</p>
+<p><img alt="配图" src="/blog/assets/images/v2-2c8a66346b0e2a8b2d58780e4f07f2fb.jpg" /></p>
+<h3 id="33-chatgpt">3.3 完成 ChatGPT 账号授权</h3>
+<p>在浏览器弹出的页面中,登录你的 ChatGPT Plus 账号。</p>
+<p><strong>重要提示:</strong></p>
+<ul>
+<li>如果页面打不开,请检查你的网络环境</li>
+<li>确保你的 ChatGPT 账号是 Plus、Business 或 Pro 会员</li>
+</ul>
+<p>登录成功后会显示授权确认页面,点击「<strong>继续</strong>」按钮完成授权。</p>
+<p><img alt="配图" src="/blog/assets/images/v2-a0f9c1e0756741f154602f3822bf2d01.jpg" /></p>
+<h3 id="34-codex">3.4 Codex 登录成功确认</h3>
+<p>当你看到下面的提示页面时,说明 Codex 登录配置已经成功完成!</p>
+<p><img alt="配图" src="/blog/assets/images/v2-2c6e101cae29f7c78b5fe6909653a342.jpg" /></p>
+<h3 id="codex-_1">四、Codex 使用教程 - 首次使用配置</h3>
+<p>回到 Trae 编程工具,现在你已经可以自由地和 Codex 对话了!但在正式使用前,我们建议你先进行一些基础配置,以获得最佳的使用体验。</p>
+<h3 id="41-codex">4.1 配置 Codex 使用偏好设置</h3>
+<p>第一次使用 Codex 时,建议按照下图进行配置优化:</p>
+<p><strong>推荐配置项:</strong></p>
+<ul>
+<li>语言偏好:中文/English</li>
+<li>代码风格:根据项目需求选择</li>
+<li>响应速度:平衡模式</li>
+<li>上下文记忆:开启</li>
+</ul>
+<p><img alt="配图" src="/blog/assets/images/v2-bbd83c5b7247dbbf363117bf98ea4571.jpg" /></p>
+<p><img alt="配图" src="/blog/assets/images/v2-0ac14d8c2b1efa1ab914e062f875c92d.jpg" /></p>
+<p><img alt="配图" src="/blog/assets/images/v2-b2b35f849367615268072d989a4fac69.jpg" /></p>
+<p><img alt="配图" src="/blog/assets/images/v2-d4e5e86c6e62b63d5f21d8aba7f45381.jpg" /></p>
+<h3 id="42-gpt-53-codex">4.2 开始使用 GPT-5.3-Codex 进行编程</h3>
+<p>配置完成后,你就可以愉快地使用 GPT-5.3-Codex 这个最强大的 AI 编程助手进行对话编程了!</p>
+<p><strong>常见使用场景:</strong></p>
+<ul>
+<li>代码补全和建议</li>
+<li>Bug 调试和修复</li>
+<li>代码重构和优化</li>
+<li>技术问题解答</li>
+<li>项目架构建议</li>
+</ul>
+<h3 id="codex-faq">五、Codex 安装教程和使用教程常见问题解答(FAQ)</h3>
+<h3 id="q1-codex">Q1: Codex 安装教程中最常见的问题是什么?</h3>
+<p><strong>A:</strong> 最常见的问题是网络环境配置不当导致无法访问 OpenAI 服务。建议在开始 Codex 安装教程前,先确保网络环境正常,能够访问 ChatGPT 官网。</p>
+<h3 id="q2-codex-api-key">Q2: Codex 使用教程中需要 API Key 吗?</h3>
+<p><strong>A:</strong> 不需要!根据 OpenAI 最新政策,ChatGPT Plus 用户可以直接通过账号登录使用 Codex CLI,无需申请 API Key。这是本 Codex 使用教程的一大优势。</p>
+<h3 id="q3-codex">Q3: 按照 Codex 安装教程操作后,登录失败怎么办?</h3>
+<p><strong>A:</strong> 登录失败通常有三个原因:</p>
+<ol>
+<li>ChatGPT 账号不是 Plus/Business/Pro 会员</li>
+<li>网络环境无法访问 OpenAI 服务</li>
+<li>浏览器缓存问题,建议清除缓存后重试</li>
+</ol>
+<h3 id="q4-codex-chatgpt-plus">Q4: Codex 使用教程中提到的 ChatGPT Plus 如何开通?</h3>
+<p><strong>A:</strong> 国内用户可以通过以下方式开通 ChatGPT Plus:</p>
+<ul>
+<li>国内自助升级工具:<a href="http://getgpt.pro/i/xiaolincoding2">国内自助升级 ChatGPT Plus 网站</a></li>
+<li>详细开通教程:<a href="https://www.xiaolincoding.com/other/gotochatgpt.html">国内如何开通订阅ChatGPT Plus会员</a></li>
+</ul>
+<h3 id="q5-codex-ai">Q5: 本 Codex 安装教程适用于哪些 AI 编程工具?</h3>
+<p><strong>A:</strong> 本 Codex 安装教程以 Trae 为例,但同样适用于 Cursor、Qoder、Kiro 等主流 AI 编程工具。核心步骤是一致的:搜索插件 → 安装 → 登录授权。</p>
+<h3 id="codex_2">六、Codex 使用教程总结</h3>
+<p>通过本篇 <strong>Codex 安装教程和 Codex 使用教程</strong>,我们详细讲解了如何在国内环境下:</p>
+<ol>
+<li><strong>完成 Codex 安装教程的准备工作</strong> - 准备 AI 编程工具、ChatGPT Plus 账号和网络环境</li>
+<li><strong>按步骤执行 Codex 安装教程</strong> - 搜索、安装 OpenAI Codex 插件</li>
+<li><strong>掌握 Codex 使用教程的登录配置</strong> - 通过 ChatGPT 账号授权登录</li>
+<li><strong>优化 Codex 使用体验</strong> - 配置偏好设置,开始编程实战</li>
+</ol>
+<p>GPT-5.3-Codex 是目前最强大的 AI 编程助手之一,配合本 <strong>Codex 使用教程</strong>,你可以大幅提升编程效率。如果你在 Codex 安装教程或使用过程中遇到任何问题,欢迎在评论区留言交流。</p>
+  <div id="interact" data-slug="codex-guonei-install"></div>
+</article>
+</main>
+<footer class="site-footer"><div class="wrap">© 2026 Lnbo 日记本 · 由 X2MD + nginx 驱动</div></footer>
+<script defer src="/blog/assets/interact.js"></script>
+<script defer src="/blog/assets/enhance.js"></script>
+<script defer src="/blog/assets/ai-ask.js"></script>
+</body>
+</html>

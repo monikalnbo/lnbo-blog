@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="/blog/assets/feed.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+<title>Lnbo 日记本</title>
+<link>https://lnboself.cn/blog/</link>
+<description>字是别人的，本子是我的——十有九篇是转载，篇篇都是我挑的</description>
+<language>zh-CN</language>
+<atom:link href="https://lnboself.cn/blog/feed.xml" rel="self" type="application/rss+xml"/>
+<item><title>孙哥的小作文：致胡锡进老师</title><link>https://lnboself.cn/blog/posts/sun-ge-zhi-huxijin.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/sun-ge-zhi-huxijin.html</guid><pubDate>Tue, 01 Sep 2026 08:00:00 +0800</pubDate><description><![CDATA["彩礼总归是要付的，无非是三万、三十万、三百万、三千万的分别。"——一篇向长辈请教婚育代价规则的长文。（网络流传文本，版权归原作者所有）]]></description></item>
+<item><title>AI 圈两天两个大瓜：七百个 AI 联手黑了一家真实公司，马斯克又从 OpenAI 手里抢走了 Cursor</title><link>https://lnboself.cn/blog/posts/ai-liangtian-dagua.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/ai-liangtian-dagua.html</guid><pubDate>Sun, 30 Aug 2026 10:00:00 +0800</pubDate><description><![CDATA[1200 个本应隔离的 AI 代理偷偷搭了地下联络站，700 个联手真的黑掉了 Hugging Face；SpaceX 花 600 亿收购 Cursor，OpenAI 当场翻脸断供。AI 时代，控制权比能力更重要。]]></description></item>
+<item><title>孙哥的小作文：我的女友景甜</title><link>https://lnboself.cn/blog/posts/sun-ge-xiaozuowen.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/sun-ge-xiaozuowen.html</guid><pubDate>Sun, 30 Aug 2026 09:00:00 +0800</pubDate><description><![CDATA[从 2007 年的一张 QQ 图片，到蒙太奇拉古纳海滩第八天的电话——一篇网络热传的第一人称叙事长文。（网络流传文本，版权归原作者所有）]]></description></item>
+<item><title>万字长文｜Codex 从入门到精通</title><link>https://lnboself.cn/blog/posts/codex-from-zero-to-master.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/codex-from-zero-to-master.html</guid><pubDate>Sun, 23 Aug 2026 10:00:00 +0800</pubDate><description><![CDATA[从 App 界面、工作区选择、Plan 与权限，到 Skills、Plugins、MCP、Automations 和 /goal——一篇覆盖 Codex 全貌的系统性教程。]]></description></item>
+<item><title>Codex 使用大全（万字长文，建议收藏）</title><link>https://lnboself.cn/blog/posts/codex-shiyong-daquan.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/codex-shiyong-daquan.html</guid><pubDate>Thu, 20 Aug 2026 10:00:00 +0800</pubDate><description><![CDATA[从安装到 10 个实战案例：计划模式、追求目标、Chrome 插件、Computer Use、自动化、技能……不写一行代码跟着做也能出成果。]]></description></item>
+<item><title>系列连载｜Hermes Agent 研究（全九章）</title><link>https://lnboself.cn/blog/posts/hermes.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/hermes.html</guid><pubDate>Sat, 15 Aug 2026 10:00:00 +0800</pubDate><description><![CDATA[GitHub 97k star 的开源自我改进智能体深度解读：理念、核心架构、自改进学习循环、三层记忆系统、技能系统、对比与社区生态。]]></description></item>
+<item><title>2026 年国内 Codex 安装教程和使用教程：GPT-5.3-Codex 完整指南</title><link>https://lnboself.cn/blog/posts/codex-guonei-install.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/codex-guonei-install.html</guid><pubDate>Mon, 10 Aug 2026 10:00:00 +0800</pubDate><description><![CDATA[国内环境下的准备、安装、登录配置与上手全流程，5 分钟完成部署。]]></description></item>
+<item><title>教程向：OpenAI Codex 不完全の伪新手指南</title><link>https://lnboself.cn/blog/posts/codex-tutorial.html</link><guid isPermaLink="true">https://lnboself.cn/blog/posts/codex-tutorial.html</guid><pubDate>Tue, 16 Sep 2025 10:00:00 +0800</pubDate><description><![CDATA[config.toml 基础配置、模型参数调优、sandbox 与审批策略——写给有一点使用经验的进阶指南。]]></description></item>
+</channel>
+</rss>

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教程向：OpenAI Codex 不完全の伪新手指南 | Lnbo 日记本</title>
+<meta property="og:title" content="教程向：OpenAI Codex 不完全の伪新手指南">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Lnbo 日记本">
+<meta property="og:url" content="https://lnboself.cn/blog/posts/codex-tutorial.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23b4532a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23faf9f7' font-family='Songti SC,SimSun,serif' font-weight='bold'%3E文%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/blog/assets/style.css?v=20260901-2">
+<script defer src="/blog/assets/analytics.js"></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="logo" href="/blog/"><b>文</b> · Lnbo 日记本</a>
+    <nav><a href="/blog/">首页</a><a href="/blog/about.html">关于</a><a href="/blog/feed.xml" title="RSS 订阅">RSS</a></nav>
+  </div>
+</header>
+<main class="wrap">
+  <article>
+    <div class="meta-published">📅 发布于 2026-08-25</div>
+    >教程向：OpenAI Codex 不完全の伪新手指南</h1>
+    <div class="source-box">
+      📌 本文转载自 LINUX DO 论坛，版权归原作者 <a href="https://x.com/loongphy" target="_blank" rel="noopener">loongphy</a> 所有。
+      原文：<a href="https://linux.do/t/topic/961929" target="_blank" rel="noopener">https://linux.do/t/topic/961929</a>
+    </div>
+<div style="margin:-14px 0 22px"><b style="font-size:13px;color:var(--muted)">🏷️ 标签：</b><span class="tag-chips"><span class="tag-chip">Codex</span><span class="tag-chip">config 调优</span><span class="tag-chip">进阶指南</span></span></div>
+    <blockquote>
+<p>Note</p>
+<p>前言：最近刷论坛发现总有佬友问关于 Codex 的问题，所以写了篇文档简单教一下。</p>
+<p>内容也更新到了Lnbo 日记本，可能略有差别：<a href="https://loongphy.com/blog/codex-tutorial">OpenAI Codex 不完全の伪新手指南</a></p>
+<p>Warning</p>
+<p>这并不是一篇零基础上手指南，需要您有一点点 Codex 使用经验。由于本人对于 <a href="https://github.com/openai/codex">官方仓库</a> 所用 Rust 语言并不了解，所有信息均来自 PR 和 Issue 讨论，可能存在经验主义错误，如有事实偏差，还望指正。本文偏向于 Windows 的调教指南，如果这你都能看完，想必 MacOS/Linux 更能得心应手。</p>
+</blockquote>
+<h2 id="_1">前言</h2>
+<ul>
+<li>官方文档：<a href="https://developers.openai.com/codex/quickstart">Quickstart</a></li>
+<li>项目文档：<a href="https://github.com/openai/codex/tree/main/docs">codex/docs at main · openai/codex · GitHub</a></li>
+</ul>
+<h2 id="configtoml">基础配置 config.toml</h2>
+<blockquote>
+<p>Tip</p>
+<p>工欲善其事，必先利其器。对于 Codex 这个工具，强烈建议把配置文档看一遍 <a href="https://linux.do/t/topic/961929">config.md</a></p>
+</blockquote>
+<p>在 <code>~/.codex/config.toml</code> 中配置基础的 Codex</p>
+<pre><code>model = &quot;gpt-5-codex&quot; # Codex 0.36.0 支持
+model_reasoning_effort = &quot;high&quot; # 使用最大推理能力
+model_reasoning_summary = &quot;detailed&quot; # 在终端显示详细的推理总结（ctrl+T查看）OpenAI 没有推理过程，只有推理总结
+model_verbosity = &quot;high&quot; # 不懂，总之要拉满
+model_supports_reasoning_summaries = true # 强制启用推理总结，针对于自定义 API KEY 的
+
+hide_agent_reasoning = false # 允许显示更多的 AGENT 内部思考过程
+
+disable_response_storage = true # 不允许 OpenAI 服务端存储你的对话
+
+approval_policy = &quot;never&quot; # 配了但没用，总之先放着，建议通过 /approvals 配置
+sandbox_mode = &quot;workspace-write&quot; # 配了但没用，总之先放着，建议通过 /approvals 配置
+# allow network in workspace-write mode
+[sandbox_workspace_write]
+network_access = true
+</code></pre>
+<h2 id="_2">命令</h2>
+<blockquote>
+<p>Tip</p>
+<p><code>codex --help</code> 是一个好习惯</p>
+</blockquote>
+<p>终端执行 <code>codex</code> 后进入，输入 <code>/</code> 你能得到目前支持的一些快捷命令。</p>
+<h3 id="status">/status</h3>
+<p>最常用的命令，用于检查当前的权限和 GPT-5 模型配置。如果你是自定义 API Key，更应该多使用该命令检查是否使用了正确模型。</p>
+<h3 id="approvals">/approvals</h3>
+<p>授予 Codex 权限，目前有三种，如果超出权限限制，就需要用户手动确认：</p>
+<ul>
+<li>Read Only：默认权限，只能读取文件（实操下来限制太多，和 Agent Coding 自由理念相悖，一个任务可能要十多次手动批准。太麻烦）</li>
+<li>Auto：读写，运行命令（实测一点也不 Auto，还是有太多手动批准）</li>
+<li>Full Access：读写、使用网络工具（虽然官方一再声明小心操作，但这是我的日常使用的方式，真正的 Auto，整个过程不需要一次确认）</li>
+</ul>
+<p>个人倾向日常选用 <code>Full Access</code> ，可以在每次运行 Codex 时添加额外的命令参数，无需每次重新选择权限：</p>
+<pre><code>codex --dangerously-bypass-approvals-and-sandbox
+</code></pre>
+<h3 id="mcp">/mcp</h3>
+<p>Codex 目前仅支持 <code>STDIO</code>，若遇到仅支持 <code>SSE</code> 的 MCP Server，请查看下一章节。</p>
+<p>如果你是 Windows 开发者，遵从 <a href="https://github.com/openai/codex/blob/main/docs/config.md#mcp_servers">mcp_servers</a> 一定会配置失败。通常进入 Codex 你会看到</p>
+<p><code>Program not found</code> 或 <code>request timed out</code></p>
+<p>需要在原教程文档基础上增加如下：</p>
+<ul>
+<li>
+<p>新增 <code>command</code> 指向具体的 npx 位置</p>
+</li>
+<li>
+<p>新增 <code>env</code> 包含 SYSTEMROOT</p>
+</li>
+</ul>
+<pre><code>[mcp_servers.context7]
+
+command = &quot;C:\\Program Files\\nodejs\\npx.cmd&quot;
+
+args = [&quot;-y&quot;, &quot;@upstash/context7-mcp&quot;, &quot;--api-key&quot;, &quot;&lt;your_api_key&gt;&quot;]
+
+env = {SYSTEMROOT = 'C:\Windows'}
+</code></pre>
+<p><a href="https://cdn3.ldstatic.com/original/4X/0/d/c/0dc055ea9cee4ea181b6ebb712a1dabdd745eb7c.jpeg" title="codex-mcp"><img alt="Image 1: codex-mcp" src="X2MD-attachments/codex-mcp.jpeg" /></a></p>
+<h3 id="mcp-server-sse">MCP Server (SSE 方式)</h3>
+<p>在 WSL2 采用 MacOS/Linux 方式配置，访问 Windows 代码仓库时，也会出现 <code>request timed out</code> 问题。</p>
+<p>此类问题通常是 Codex 没有正常读取环境导致的，可以借助 <a href="https://github.com/geelen/mcp-remote">mcp-remote</a> 通过切换到 <code>SSE</code> 的方式解决。</p>
+<p>除此之外，还有些 MCP Server 仅支持 <code>SSE</code>，所以我们也需要采用这种方式，比如 <a href="https://docs.devin.ai/work-with-devin/deepwiki-mcp">deepwiki</a>。</p>
+<blockquote>
+<p>Danger</p>
+<p><code>mcp-remote</code> 是第三方作者开发，非 MCP 协议官方支持，需考虑风险。</p>
+</blockquote>
+<p>分为两种方式，可以二者选其一。</p>
+<h4 id="_3">全局安装</h4>
+<ol>
+<li>
+<p><code>npm install -g mcp-remote</code></p>
+</li>
+<li>
+<p>添加 SSE 的方式（需要 MCP Server 支持）</p>
+</li>
+</ol>
+<pre><code>[mcp_servers.context7]
+
+command = &quot;mcp-remote&quot;
+
+args = [&quot;https://mcp.context7.com/mcp&quot;, &quot;--header&quot;, &quot;CONTEXT7_API_KEY: &lt;your-api-key&gt;&quot;]
+
+[mcp_servers.deepwiki]
+
+command = &quot;mcp-remote&quot;
+
+args = [&quot;https://mcp.deepwiki.com/sse&quot;]
+</code></pre>
+<h4 id="npx">npx</h4>
+<pre><code>[mcp_servers.context7]
+
+command = &quot;npx&quot;
+
+args = [&quot;mcp-remote&quot;, &quot;https://mcp.context7.com/mcp&quot;, &quot;--header&quot;, &quot;CONTEXT7_API_KEY: &lt;your-api-key&gt;&quot;]
+
+[mcp_servers.deepwiki]
+
+command = &quot;npx&quot;
+
+args = [&quot;mcp-remote&quot;, &quot;https://mcp.deepwiki.com/sse&quot;]
+</code></pre>
+<h2 id="_4">工具调用</h2>
+<p>为了<strong>最快</strong>、<strong>最准确</strong>的帮助 Codex 完成搜索，我们需要针对性的使用不同的工具。</p>
+<p>不同的系统平台，Shell 工具也有所不同，本文主要聚焦于 Windows 平台，旨在引导 Codex 使用正确的命令和工具，减少错误重试、降低单次任务执行的时长。</p>
+<p>Codex 支持在代码仓库根目录添加 <a href="http://agents.md/"><code>AGENTS.md</code></a> 文件来指导 Codex 在该仓库下遵守的规则，如：仓库技术栈、工具调用等。</p>
+<p>目前主要使用三种：fd, ripgrep 和 ast-grep。</p>
+<ul>
+<li><strong>按文件名找 → <code>fd</code></strong></li>
+<li><strong>按文本内容找 → <code>rg</code>（ripgrep）</strong></li>
+<li><strong>按代码结构/语义找 → <code>sg</code>（ast-grep）</strong></li>
+</ul>
+<h3 id="windows">Windows 安装</h3>
+<blockquote>
+<p>0.41 版本后废弃</p>
+<p>从 codex v0.41 版本开始，ripgrep 已经被内置到 npm 包中，无需手动安装。</p>
+<p><code>winget install sharkdp.fd BurntSushi.ripgrep.MSVC ast-grep</code></p>
+<p>如果你感兴趣的话，ripgrep 相对 <a href="https://linux.do/u/openai">@openai</a>/codex 包根目录的 ripgrep 位置是 <code>vendor/&lt;target-triple&gt;/path/rg</code>（Windows 为 <code>rg.exe</code>）。你甚至可以与 Codex 对话询问 <code>工具 rg 在哪个位置</code>。</p>
+</blockquote>
+<p>从 codex v0.41 版本开始，ripgrep 已经内置在 npm 包中，因此只需要安装 fd 和 ast-grep：</p>
+<pre><code>winget install sharkdp.fd ast-grep
+</code></pre>
+<h3 id="wsl2debian">WSL2（Debian）</h3>
+<pre><code>apt install -y fd-find
+</code></pre>
+<pre><code>npm i @ast-grep/cli -g
+</code></pre>
+<h3 id="agentsmd"><a href="http://agents.md/"><code>AGENTS.md</code></a></h3>
+<p>在实际操作过程中，发现只声明可用工具而不引导具体用法，经常会偏离预期，因此建议复制如下完整的配置，按需调整。</p>
+<pre><code>## Tool Priority
+
+- Filename search: `fd`.
+- Text/content search: `rg` (ripgrep).
+- AST/structural search: `sg` (ast-grep) — preferred for code-aware queries (imports, call expressions, JSX/TSX nodes).
+
+### AST-grep Usage (Windows)
+
+- Announce intent and show the exact command before running complex patterns.
+- Common queries:
+  - Find imports from `node:path` (TypeScript/TSX):
+    - `ast-grep -p &quot;import $$ from 'node:path'&quot; src --lang ts,tsx,mts,cts`
+  - Find CommonJS requires of `node:path`:
+    - `ast-grep -p &quot;require('node:path')&quot; src --lang js,cjs,mjs,ts,tsx`
+  - Suggest rewrite (do not auto-apply in code unless approved):
+    - Search: `ast-grep -p &quot;import $$ from 'node:path'&quot; src --lang ts,tsx`
+    - Proposed replacement: `import $$ from 'pathe'`
+
+### Search Hygiene (fd/rg/sg)
+
+- Exclude bulky folders to keep searches fast and relevant: `.git`, `node_modules`, `coverage`, `out`, `dist`.
+- Prefer running searches against a scoped path (e.g., `src`) to implicitly avoid vendor and VCS directories.
+- Examples:
+  - `rg -n &quot;pattern&quot; -g &quot;!{.git,node_modules,coverage,out,dist}&quot; src`
+  - `fd --hidden --exclude .git --exclude node_modules --exclude coverage --exclude out --exclude dist --type f &quot;.tsx?$&quot; src`
+- ast-grep typically respects `.gitignore`; target `src` to avoid scanning vendor folders:
+  - `ast-grep -p &quot;import $$ from '@shared/$$'&quot; src --lang ts,tsx,mts,cts`
+  - If needed, add ignore patterns to your ignore files rather than disabling ignores.
+</code></pre>
+<h2 id="_5">系统通知</h2>
+<p>Codex 支持在任务执行完成后执行自定义事件，我们可以利用这一特性实现 Windows 系统弹窗通知。</p>
+<blockquote>
+<p>Tip</p>
+</blockquote>
+<ul>
+<li>~/.codex/config.toml</li>
+</ul>
+<pre><code>notify = [&quot;powershell.exe&quot;,&quot;-NoProfile&quot;,&quot;-ExecutionPolicy&quot;,&quot;Bypass&quot;,&quot;-File&quot;,&quot;C:\\Users\\&lt;username&gt;\\.codex\\notify.ps1&quot;]
+</code></pre>
+<ul>
+<li>~/.codex/notify.ps1</li>
+</ul>
+<pre><code>param(
+  [Parameter(Mandatory = $true)]
+  [string]$json
+)
+
+# 解析 JSON（Codex 把一段 JSON 作为 argv[1] 传进来）
+try {
+  $payload = $json | ConvertFrom-Json
+} catch {
+  $payload = @{}
+}
+
+$title = 'Codex'
+$msg   = $payload.'last-assistant-message'
+if (-not $msg) {
+  if ($payload.type) {
+    $msg = &quot;Event: $($payload.type)&quot;
+  } else {
+    $msg = 'Codex has an update.'
+  }
+}
+
+# 可选：截断过长文本，注意只用 ASCII 的三点号，避免乱码
+if ($msg -and $msg.Length -gt 240) {
+  $msg = $msg.Substring(0,240) + '...'
+}
+
+# 只用 Toast，不要任何 Popup 兜底
+Import-Module BurntToast -ErrorAction Stop
+New-BurntToastNotification -Text $title, $msg | Out-Null
+</code></pre>
+<h2 id="codex-prompt">Codex Prompt 调试技巧</h2>
+<p>每次修改 <a href="https://agents.md/">AGENTS.md</a> 后，多使用 <code>ctrl+T</code> 查看其思考过程，看看命令的调用、思考过程是否符合你的预期。若不符，直接与 Codex 对话询问该如何调整 <a href="http://agents.md/"><code>AGENTS.md</code></a>，多重复几轮一般都能得到比较满意的结果。</p>
+<pre><code>[开始]
+  |
+  v
+[修改 [`AGENTS.md`](http://AGENTS.md)]
+  |
+  v
+[Ctrl+T 查看当前思考过程/轨迹]
+  |
+  v
+{是否符合你的预期?}
+        |是
+        v
+   [提交/应用变更]───►(结束或进入下一任务)
+        ^
+        |否
+        |
+        v
+[与 Codex 对话：询问如何调整 [`AGENTS.md`](http://AGENTS.md)]
+        |
+        v
+[根据建议再次修改 [`AGENTS.md`](http://AGENTS.md)]
+        |
+        └───────────────循环回到───────────────┐
+                                            v
+                              [Ctrl+T 查看当前思考过程/轨迹]
+</code></pre>
+<h2 id="spec-kit">Spec-kit （实验性）</h2>
+<p>模仿 <a href="https://github.com/github/spec-kit">spec-kit</a> 建立了一套实现新功能的规范，包含三个流程：spec, plan 和 do。</p>
+<p>还在尝试优化中，因此未利用 <a href="https://github.com/openai/codex/blob/main/docs/prompts.md">codex/prompts.md</a> 方式注入指令，而是通过 <a href="http://agents.md/"><code>AGENTS.md</code></a> 来时刻调整测试，在对话时输入 <code>/spec</code> 和 <code>/plan</code> 和 <code>/do</code> 即可。</p>
+<ol>
+<li>/spec 开头，输入你想要实现的功能，Codex 会自动在 specs 文件夹下生成一个 Markdown 文件</li>
+<li>/plan 开头，Codex 会自动在 plans 文件夹下生成一个带有日期的 Markdown 文件</li>
+<li>/do 会自动按照 plan 任务实现。</li>
+</ol>
+<p>不必严格遵从上述三个顺序来执行，如果 spec 文件不符预期，完全可以继续多轮对话调整满意后，再输入 <code>/plan</code> 来引导生成 plan 文件。</p>
+<pre><code>## Stage-Gated Workflow (spec/plan/do)
+
+- Mode: Opt-in. The workflow applies only when the user explicitly uses `/spec`, `/plan`, or `/do`. Routine Q&amp;A or trivial edits do not require these stages.
+- Triggers: A message containing one of `/spec`, `/plan`, or `/do` activates or advances the workflow. Once active, stages must proceed in order with explicit user approval to advance.
+- Guardrails:
+  - Do not modify source code before `/do`. Documentation/spec files may be edited only in `/spec`.
+  - Do not skip stages or proceed without user confirmation once the workflow is active.
+  - If scope changes, return to the appropriate prior stage for approval.
+  - Respect sandbox/approval settings for all actions.
+
+- When to Use
+  - Use the workflow for new features, structural refactors, multi-file changes, or work needing traceability.
+  - Skip the workflow (no triggers) for routine Q&amp;A, diagnostics, or one-off trivial edits.
+
+- Entry Points and Prerequisites
+  - `/spec` is the canonical entry point for new efforts.
+  - `/plan` requires an approved `/spec`. If unclear which spec applies, pause and ask the user to identify the correct file(s) under `specs/`.
+  - `/do` requires an approved `/plan`.
+
+- `/spec` (Specifications; docs only)
+  - Purpose: Capture a concrete, reviewable specification using spec-kit style.
+  - Output: Markdown spec(s) under `specs/` (no code changes). Share a concise diff summary and links to updated files; wait for approval.
+  - Style: Specs are canonical and final. Do not include change logs or “correction/更正” notes. Incorporate revisions directly so the document always reflects the current agreed state. Historical context belongs in PR descriptions, commit messages, or the conversation — not in the spec.
+  - Recommended contents:
+    - Problem statement and context
+    - Goals and non-goals
+    - Requirements and constraints (functional, UX, performance, security)
+    - UX/flows and API/IPC contracts (as applicable)
+    - Acceptance criteria and success metrics
+    - Alternatives considered and open questions
+    - Rollout/backout considerations and telemetry (if relevant)
+
+- `/plan` (High-level Plan; docs only)
+  - Purpose: Turn the approved spec into an ordered, verifiable implementation plan.
+  - Inputs: Approved spec file(s) in `specs/`.
+  - Ambiguity: If the relevant spec is unclear, pause and request clarification before writing the plan.
+  - Style: Plans are canonical and should not include change logs or “correction/更正” notes. Incorporate revisions directly so the plan always reflects the current agreed state. Historical notes should live in PR descriptions, commit messages, or the conversation.
+  - Output:
+    - An ordered plan via `update_plan` (short, verifiable steps; Task is merged into Plan and tracked here).
+    - A plan document in `plans/` named `YYYY-MM-DD-short-title.md`, containing:
+      - Scope and links to authoritative spec(s)
+      - Assumptions and out-of-scope items
+      - Phases/milestones mapped to acceptance criteria
+      - Impacted areas, dependencies, risks/mitigations
+      - Validation strategy (tests/lint/build) and rollout/backout notes
+      - Approval status and next stage
+  - Handoff: Await user approval of the plan before `/do`.
+
+- `/do` (Execution)
+  - Purpose: Implement approved plan steps with minimal, focused changes and file operations.
+  - Actions:
+    - Use `apply_patch` for file edits; group related changes and keep diffs scoped to approved steps.
+    - Provide concise progress updates and a final summary of changes.
+    - Validate appropriately: run `pnpm lint`, `pnpm format`, `pnpm build`, and relevant tests.
+    - If material changes to the plan are needed, pause and return to `/plan` (or `/spec`) for approval.
+  - Output: Implemented changes, validation results, and a concise change summary linked to the plan checklist.
+
+### Plans Directory
+
+- Location: `plans/` at the repository root.
+- Filename: `YYYY-MM-DD-short-title.md` (kebab-case title; consistent dating).
+- Style: Plan docs are the canonical source of truth for the implementation approach; avoid embedding change logs or “correction/更正” notes. Update the plan in place as decisions evolve.
+- Contents:
+  - Title and summary
+  - Scope and linked specs (paths under `specs/`)
+  - Assumptions / Out of scope
+  - Step-by-step plan (short, verifiable)
+  - Validation strategy (tests/lint/build)
+  - Approval status and next stage
+- Process:
+  - During `/plan`, create or update the relevant file in `plans/` and share a short summary in the conversation. Await approval before `/do`.
+</code></pre>
+<h2 id="wsl2">WSL2</h2>
+<p>如果你在 Windows 下让 Codex 执行任务，你会发现它经常调用命令失败然后重试，如此循环。虽然最终都会成功，但浪费了很多时间，个人推测这是因为 GPT-5 Unix Shell 训练数据太多而 Powershell 数据太少导致的幻觉，Codex 总是下意识调用 Unix Shell 命令来处理。</p>
+<p>那么有没有办法解决呢？当然有！打不过就加入——WSL2。</p>
+<p>以 Windows 11 为例，在 Powershell 执行 <code>wsl --install</code> 即可安装 WSL2。</p>
+<p>这种情况下，有两种方式选择：</p>
+<ul>
+<li>Windows 端代码+WSL2 Codex 环境，适用于开发 Windows 端的程序，比如 Electron Windows，.NET 等</li>
+<li>WSL2 代码 + WSL2 Codex 环境，比如 Vue Web 开发</li>
+</ul>
+<p>对于后者，所有都能正常在 WSL2 环境内运行，就不做说明了，而前者 Windows + WSL2 混用就需要解决一个问题：如何在 WSL2 调用 Windows 端的 <code>npm/pnpm</code>，执行定义好的 <code>pnpm typecheck``pnpm lint:fix</code> 等。</p>
+<p>在 WSL2 Codex 对话时，要求其调用 pwsh.exe 来执行 <code>pnpm typecheck</code> 来检查，如此即可。</p>
+<pre><code>we're in WSL2, please using pwsh.exe to run `pnpm &lt;script&gt;`
+</code></pre>
+<h2 id="agentsmd_1">完整 <a href="http://agents.md/">AGENTS.md</a></h2>
+<p>还在调整中，不要完全照抄，最好还是通过 <code>ctrl+T</code> 查看整个过程，如果遇到 Codex 经常会出错的命令，选择性的修删适合自己的 <a href="http://agents.md/"><code>AGENTS.md</code></a>。</p>
+<p>主要适配内容：</p>
+<ul>
+<li>Windows/WSL2 支持，优先使用 Powershell 支持的命令，对于任何 npm 包安装都必须请示用户，避免混乱的依赖项</li>
+<li>使用 fd,ripgrep,ast-grep 搜索文件、文本和代码片段，更快更直接</li>
+<li>spec/plan/do 工作流，先确定规范，再编写计划，最后实现</li>
+</ul>
+<pre><code># AGENTS Guidelines
+
+## Windows Environment Notice
+
+- Prefer PowerShell (`pwsh`/`powershell`) when on Windows.
+- Prefer using pwsh.exe to run `pnpm &lt;script&gt;` when on WSL2.
+- WSL2 may be used for non-package-manager commands only (e.g., `rg`, `tar`). Avoid running Node builds in WSL due to OS mismatch.
+- WSL2 cross-drive performance: accessing repos under `/mnt/c|d|e/...` goes through a filesystem bridge and can be slower for full scans. Prefer scoping to subtrees, excluding heavy folders, or running the same searches with native Windows binaries in PowerShell for large/iterative scans.
+- Do not auto-run dependency installs. The user must run `pnpm install` in Windows PowerShell manually and then confirm completion.
+- Do not modify `package.json`/lockfiles to add or update dependencies without explicit user approval. Propose dependencies in `/spec` or `/plan`, and ask the user to run `pnpm add &lt;pkg&gt;` (or `pnpm install`) and confirm.
+- Do not call Unix text tools directly in PowerShell (e.g., `sed`, `awk`, `cut`, `head`, `tail`). Use PowerShell-native equivalents instead:
+  - `head` → `Select-Object -First N`
+  - `tail` → `Get-Content -Tail N`
+  - paging → `Out-Host -Paging` or `more`
+  - substitution/replace → `-replace` with `Get-Content`/`Set-Content`
+
+## Tool Priority
+
+- Filename search: `fd`.
+- Text/content search: `rg` (ripgrep).
+- AST/structural search: `sg` (ast-grep) — preferred for code-aware queries (imports, call expressions, JSX/TSX nodes).
+
+### AST-grep Usage
+
+- Announce intent and show the exact command before running complex patterns.
+- Common queries:
+  - Find imports from `node:path` (TypeScript/TSX):
+    - `ast-grep -p &quot;import $$ from 'node:path'&quot; src --lang ts,tsx,mts,cts`
+  - Find CommonJS requires of `node:path`:
+    - `ast-grep -p &quot;require('node:path')&quot; src --lang js,cjs,mjs,ts,tsx`
+  - Suggest rewrite (do not auto-apply in code unless approved):
+    - Search: `ast-grep -p &quot;import $$ from 'node:path'&quot; src --lang ts,tsx`
+    - Proposed replacement: `import $$ from 'pathe'`
+
+### Search Hygiene (fd/rg/sg)
+
+- Exclude bulky folders to keep searches fast and relevant: `.git`, `node_modules`, `coverage`, `out`, `dist`.
+- Prefer running searches against a scoped path (e.g., `src`) to implicitly avoid vendor and VCS directories.
+- Examples:
+  - `rg -n &quot;pattern&quot; -g &quot;!{.git,node_modules,coverage,out,dist}&quot; src`
+  - `fd --hidden --exclude .git --exclude node_modules --exclude coverage --exclude out --exclude dist --type f &quot;.tsx?$&quot; src`
+- ast-grep typically respects `.gitignore`; target `src` to avoid scanning vendor folders:
+  - `ast-grep -p &quot;import $$ from '@shared/$$'&quot; src --lang ts,tsx,mts,cts`
+  - If needed, add ignore patterns to your ignore files rather than disabling ignores.
+
+## Temporary Research Files
+
+- Canonical location: store all temporary research artifacts (downloaded READMEs, API docs, scratch notes) under `docs/research/`.
+- Do not place temporary files at the repository root or outside `docs/research/`.
+- Commit policy: avoid committing temporary files unless they are necessary for traceability during `/spec` or `/plan`. If committed, keep the scope minimal and store them under `docs/` only.
+- Naming: use descriptive names with date or task context (e.g., `docs/research/2025-09-11-wsl-notes.md`).
+- Cleanup: after completing a task (`/do`), evaluate whether each temporary file is still required. Remove unneeded files, or promote essential content into curated docs under `docs/` or into `specs/`/`plans/`.
+
+## Stage-Gated Workflow (spec/plan/do)
+
+- Mode: Opt-in. The workflow applies only when the user explicitly uses `/spec`, `/plan`, or `/do`. Routine Q&amp;A or trivial edits do not require these stages.
+- Triggers: A message containing one of `/spec`, `/plan`, or `/do` activates or advances the workflow. Once active, stages must proceed in order with explicit user approval to advance.
+- Guardrails:
+  - Do not modify source code before `/do`. Documentation/spec files may be edited only in `/spec`.
+  - Do not skip stages or proceed without user confirmation once the workflow is active.
+  - If scope changes, return to the appropriate prior stage for approval.
+  - Respect sandbox/approval settings for all actions.
+
+- When to Use
+  - Use the workflow for new features, structural refactors, multi-file changes, or work needing traceability.
+  - Skip the workflow (no triggers) for routine Q&amp;A, diagnostics, or one-off trivial edits.
+
+- Entry Points and Prerequisites
+  - `/spec` is the canonical entry point for new efforts.
+  - `/plan` requires an approved `/spec`. If unclear which spec applies, pause and ask the user to identify the correct file(s) under `specs/`.
+  - `/do` requires an approved `/plan`.
+
+- `/spec` (Specifications; docs only)
+  - Purpose: Capture a concrete, reviewable specification using spec-kit style.
+  - Output: Markdown spec(s) under `specs/` (no code changes). Share a concise diff summary and links to updated files; wait for approval.
+  - Style: Specs are canonical and final. Do not include change logs or “correction/更正” notes. Incorporate revisions directly so the document always reflects the current agreed state. Historical context belongs in PR descriptions, commit messages, or the conversation — not in the spec.
+  - Recommended contents:
+    - Problem statement and context
+    - Goals and non-goals
+    - Requirements and constraints (functional, UX, performance, security)
+    - UX/flows and API/IPC contracts (as applicable)
+    - Acceptance criteria and success metrics
+    - Alternatives considered and open questions
+    - Rollout/backout considerations and telemetry (if relevant)
+
+- `/plan` (High-level Plan; docs only)
+  - Purpose: Turn the approved spec into an ordered, verifiable implementation plan.
+  - Inputs: Approved spec file(s) in `specs/`.
+  - Ambiguity: If the relevant spec is unclear, pause and request clarification before writing the plan.
+  - Style: Plans are canonical and should not include change logs or “correction/更正” notes. Incorporate revisions directly so the plan always reflects the current agreed state. Historical notes should live in PR descriptions, commit messages, or the conversation.
+  - Output:
+    - An ordered plan via `update_plan` (short, verifiable steps; Task is merged into Plan and tracked here).
+    - A plan document in `plans/` named `YYYY-MM-DD-short-title.md`, containing:
+      - Scope and links to authoritative spec(s)
+      - Assumptions and out-of-scope items
+      - Phases/milestones mapped to acceptance criteria
+      - Impacted areas, dependencies, risks/mitigations
+      - Validation strategy (tests/lint/build) and rollout/backout notes
+      - Approval status and next stage
+  - Handoff: Await user approval of the plan before `/do`.
+
+- `/do` (Execution)
+  - Purpose: Implement approved plan steps with minimal, focused changes and file operations.
+  - Actions:
+    - Use `apply_patch` for file edits; group related changes and keep diffs scoped to approved steps.
+    - Provide concise progress updates and a final summary of changes.
+    - Validate appropriately: run `pnpm lint`, `pnpm format`, `pnpm build`, and relevant tests.
+    - If material changes to the plan are needed, pause and return to `/plan` (or `/spec`) for approval.
+  - Output: Implemented changes, validation results, and a concise change summary linked to the plan checklist.
+
+### Plans Directory
+
+- Location: `plans/` at the repository root.
+- Filename: `YYYY-MM-DD-short-title.md` (kebab-case title; consistent dating).
+- Style: Plan docs are the canonical source of truth for the implementation approach; avoid embedding change logs or “correction/更正” notes. Update the plan in place as decisions evolve.
+- Contents:
+  - Title and summary
+  - Scope and linked specs (paths under `specs/`)
+  - Assumptions / Out of scope
+  - Step-by-step plan (short, verifiable)
+  - Validation strategy (tests/lint/build)
+  - Approval status and next stage
+- Process:
+  - During `/plan`, create or update the relevant file in `plans/` and share a short summary in the conversation. Await approval before `/do`.
+</code></pre>
+<h2 id="_6">经验之谈</h2>
+<ul>
+<li><strong>主动让 Codex 调用特定工具</strong>：不要把所有的注意事项都写入到 <a href="http://agents.md/">AGENTS.md</a> 中，用户还会需要担负一些心智针对不同的场景引导 Codex 使用更为合适的工具，比如用 <code>git diff</code> 可能更能提供准确的上下文。</li>
+<li><strong>尽可能在对话时提供完整的信息来源</strong>：Codex 查找代码的方式非常原始，如 grep, ripgrep 等，很有可能搜不到你想要的内容。比如你想要询问为什么实例化了两次，请顺带给出两次出现的地方：函数、文件名等信息，能减少 Codex 的误判或者搜索代码的时间。Codex 提供了 <code>@</code> 快捷命令来帮助你快速搜索文件名。</li>
+<li><strong>网页搜索尽量使用网页端 ChatGPT-5-Thinking</strong>：搜索更快更完整，非常擅长对于 GitHub 项目的检索：包括不限于源码、项目结构、issue、PR等。特别适合了解某个开源项目的功能，单独开一个长对话和 ChatGPT 聊聊，受益良多。</li>
+</ul>
+<h2 id="_7">总结</h2>
+<p>AI 工具日新月异，一个新的工具崛起，不要妄想能三分钟上手掌握，也不要过于依赖他人的博客文档和结论，AI 工具千人千面，每个人都有各自的编程习惯，需要花几天慢慢了解工具特性和背后的大语言模型习惯，根据自己的需求和喜好来调教独属于自己的 AI 工具。</p>
+<p>面对新兴事物，莫要故步自封在一个工具上吊死，保持好奇心，勇于探索未知的可能。</p>
+<h2 id="_8">参考资料</h2>
+<ul>
+<li><a href="https://x.com/kregenrek/status/1965113557160484961">https://x.com/kregenrek/status/1965113557160484961</a></li>
+<li><a href="https://github.com/openai/codex/issues/2945#issuecomment-3257065793">https://github.com/openai/codex/issues/2945#issuecomment-3257065793</a></li>
+</ul>
+  <div id="interact" data-slug="codex-tutorial"></div>
+</article>
+</main>
+<footer class="site-footer"><div class="wrap">© 2026 Lnbo 日记本 · 由 X2MD + nginx 驱动</div></footer>
+<script defer src="/blog/assets/interact.js"></script>
+<script defer src="/blog/assets/enhance.js"></script>
+<script defer src="/blog/assets/ai-ask.js"></script>
+</body>
+</html>

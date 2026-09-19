@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>登录 / 注册 | Lnbo 日记本</title>
+<meta property="og:title" content="登录 / 注册">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Lnbo 日记本">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23b4532a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23faf9f7' font-family='Songti SC,SimSun,serif' font-weight='bold'%3E文%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/blog/assets/style.css?v=20260901-2">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap"><a class="logo" href="/blog/"><b>文</b> · Lnbo 日记本</a><nav><a href="/blog/">首页</a><a href="/blog/about.html">关于</a><a href="/blog/feed.xml" title="RSS 订阅">RSS</a></nav></div>
+</header>
+<main class="wrap narrow">
+  <div class="auth-box">
+    <div class="auth-tabs">
+      <div class="auth-tab on" id="tab-login">登录</div>
+      <div class="auth-tab" id="tab-reg">注册</div>
+    </div>
+    <div class="auth-msg" id="msg"></div>
+    <form class="auth-form" id="form">
+      <input type="text" id="username" placeholder="用户名（≥2 字符）" autocomplete="username">
+      <input type="password" id="password" placeholder="密码（≥6 位）" autocomplete="current-password">
+      <button type="submit" id="btn">登 录</button>
+    </form>
+  </div>
+</main>
+<footer class="site-footer"><div class="wrap">© 2026 Lnbo 日记本 · 由 X2MD + nginx 驱动</footer>
+<script>
+var mode = 'login';
+var params = new URLSearchParams(location.search);
+var back = params.get('back') || '/blog/';
+if (back.charAt(0) !== '/' || back.charAt(1) === '/') back = '/blog/'; // 只允许本站相对路径
+var tabL = document.getElementById('tab-login'), tabR = document.getElementById('tab-reg');
+tabL.onclick = function(){ setMode('login'); };
+tabR.onclick = function(){ setMode('reg'); };
+function setMode(m){
+  mode = m;
+  tabL.className = 'auth-tab' + (m==='login' ? ' on' : '');
+  tabR.className = 'auth-tab' + (m==='reg' ? ' on' : '');
+  document.getElementById('btn').textContent = m==='login' ? '登 录' : '注 册';
+  msg('');
+}
+function msg(t, ok){ var el=document.getElementById('msg'); el.textContent=t; el.className='auth-msg '+(ok?'ok':'err'); }
+document.getElementById('form').onsubmit = function(e){
+  e.preventDefault();
+  var u = document.getElementById('username').value.trim();
+  var p = document.getElementById('password').value;
+  fetch('/api/' + mode, { method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({username:u, password:p}) })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d.error) return msg(d.error, false);
+    if (mode === 'reg') { msg('注册成功，正在登录…', true); setMode('login'); login(u,p); }
+    else if (d.ok) { location.href = back; }
+  });
+};
+function login(u,p){ fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})}).then(function(r){return r.json();}).then(function(d){ if(d.ok) location.href = back; }); }
+</script>
+</body>
+</html>

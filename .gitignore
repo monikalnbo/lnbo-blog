@@ -1,0 +1,8 @@
+# 运行时数据(不进仓库)
+api/blog.db*
+api/__pycache__/
+*.log
+nohup.out
+
+# 系统
+.DS_Store

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermes Agent 研究系列（全九章合集） | Lnbo 日记本</title>
+<meta property="og:title" content="Hermes Agent 研究系列（全九章合集）">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Lnbo 日记本">
+<meta property="og:url" content="https://lnboself.cn/blog/posts/hermes.html">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23b4532a'/%3E%3Ctext x='32' y='44' font-size='34' text-anchor='middle' fill='%23faf9f7' font-family='Songti SC,SimSun,serif' font-weight='bold'%3E文%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/blog/assets/style.css?v=20260901-2">
+<script defer src="/blog/assets/analytics.js"></script>
+</head>
+<body>
+<header class="site-header"><div class="wrap"><a class="logo" href="/blog/"><b>文</b> · Lnbo 日记本</a><nav><a href="/blog/">首页</a><a href="/blog/about.html">关于</a><a href="/blog/feed.xml" title="RSS 订阅">RSS</a></nav></div></header>
+<main class="wrap">
+  <article>
+    <div class="meta-published">📅 发布于 2026-08-25 · 共九章 · 预计阅读 40 分钟</div>
+    >Hermes Agent 研究系列（全九章）</h1>
+    <div class="source-box">📌 本文整合自知乎专栏「AI工程实践」Kevin 的九篇系列文章，版权归原作者所有。
+    原文目录：<a href="https://zhuanlan.zhihu.com/column/c_1992219582266622175" target="_blank" rel="noopener">知乎专栏「AI工程实践」</a></div>
+<div style="margin:-14px 0 22px"><b style="font-size:13px;color:var(--muted)">🏷️ 标签：</b><span class="tag-chips"><span class="tag-chip">Hermes Agent</span><span class="tag-chip">开源智能体</span><span class="tag-chip">记忆系统</span><span class="tag-chip">自改进</span></span></div>
+    <div class="series-toc"><b>📑 目录</b><ul class="page-toc"><li><a href="#ch-1">Hermes Agent 研究（一）：一个能够与您共同成长的 Agent</a></li><li><a href="#ch-2">Hermes Agent 研究（二）：谁开发了 Hermes</a></li><li><a href="#ch-3">Hermes Agent 研究（三）：Hermes 核心架构与设计理念</a></li><li><a href="#ch-4">Hermes Agent 研究（四）：自改进学习循环详解</a></li><li><a href="#ch-5">Hermes Agent 研究（五）：三层记忆系统</a></li><li><a href="#ch-6">Hermes Agent 研究（六）：技能系统与工具集成</a></li><li><a href="#ch-7">Hermes Agent 研究（七）：技能系统与工具集成（实践篇）</a></li><li><a href="#ch-8">Hermes Agent 研究（八）：与 OpenClaw 对比分析</a></li><li><a href="#ch-9">Hermes Agent 研究（九）：社区生态与发展趋势</a></li></ul></div>
+    <p><a id="ch-1"></a></p>
+<h2>📖 Hermes Agent 研究（一）：一个能够与您共同成长的 Agent</h2>
+<p>目录收起摘要第一章 Hermes Agent 概述与定位1.1 什么是 Hermes Agent1.2 核心价值主张1.3 与传统 AI 助手的本质区别Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>摘要</h2>
+<p>在人工智能助手领域，2026年2月是一个重要的里程碑时刻。 Nous Research 发布了 Hermes Agent，一款具备自改进能力的开源自托管 AI Agent。这一产品的问世不仅仅是技术层面的创新，更是对传统 AI 助手范式的根本性挑战。Hermes Agent 的核心理念是"一个能够与您共同成长的 Agent"——它不仅能够记住跨会话的信息，还能从每次任务执行中学习和优化自己的行为，逐步变得更加智能和高效。
+本研究将基于 2026年4月的最新资料，对 Hermes Agent 进行全面深入的研究。我们将从项目背景、核心架构、自改进机制、记忆系统、技能系统、多通道支持等多个维度展开分析，并与当前市场上另一款主流开源 Agent 框架 OpenClaw 进行深入对比，帮助读者全面理解这款创新产品的技术特点和适用场景。</p>
+<h2>第一章 Hermes Agent 概述与定位</h2>
+<h3>1.1 什么是 Hermes Agent</h3>
+<p>Hermes Agent 是由 <strong>Nous Research</strong> 开发的一款开源自改进 AI Agent，于 2026年2月正式发布。与传统的 AI 助手不同，Hermes Agent 不仅仅是一个被限制在 IDE 中的代码 Copilot 或围绕单一 API 的聊天机器人wrapper，而是一个能够<strong>在用户服务器上自主运行</strong>、<strong>跨会话保持记忆</strong>、<strong>随着运行时间增长而变得更加智能</strong>的自治系统。</p>
+<p>从技术定位来看，Hermes Agent 属于自主智能体（Autonomous Agent）的范畴。它能够直接在真实的计算环境中执行操作，而不仅仅是在聊天窗口内部进行交互。这意味着用户可以部署 Hermes Agent 来完成诸如自动化报告生成、定期数据备份、持续信息整合等复杂任务，而 Agent 会在每次执行过程中不断学习和优化自己的解决方案。</p>
+<h3>1.2 核心价值主张</h3>
+<p>Hermes Agent 的核心价值主张可以概括为以下几个关键点：</p>
+<p><strong>持久记忆能力</strong>：传统的 AI 助手在每次新会话开始时都会"忘记"之前的所有对话内容，用户需要重复解释自己的偏好、项目背景和工作习惯。Hermes Agent 突破了这一限制，它能够在不同会话之间保持持久记忆，记住用户的项目信息、解决过的问题以及偏好的工作方式。这种记忆能力使得 Agent 就像一个真正了解用户的团队成员，能够提供越来越个性化的服务。</p>
+<p><strong>自改进学习循环</strong>：这是 Hermes Agent 最为独特的创新之处。传统 AI 系统需要依赖外部更新来完成能力升级，而 Hermes Agent 具备从自身经验中学习的能力。当 Agent 完成一个复杂任务后，它会分析任务执行过程，提炼出可复用的解决方案，并将其保存为可更新的技能文档。这些技能在后续使用中还会持续优化，形成一个不断增强的能力闭环。</p>
+<p><strong>多平台统一接入</strong>：在当今数字化生活中，用户可能通过多种渠道与 AI 助手交互——Telegram、Discord、Slack、WhatsApp、Signal、Email 等等。Hermes Agent 提供了一个统一的 messaging gateway，能够同时连接多个平台，用户可以在一个平台开始对话，在另一个平台无缝继续。这种跨平台的连续性大大提升了使用体验。</p>
+<p><strong>灵活的部署选项</strong>：Hermes Agent 支持五种不同的后端部署方式：本地部署、Docker 容器、SSH 远程、Singularity 容器和 Modal 云服务。每种部署方式都配备了容器硬化和命名空间隔离，确保在不同环境下都能安全运行。这种灵活性使得用户可以根据自己的技术能力和基础设施选择最合适的部署方案。</p>
+<h3>1.3 与传统 AI 助手的本质区别</h3>
+<p>要理解 Hermes Agent 的创新之处，我们需要明确它与传统 AI 助手之间的本质区别。传统 AI 助手（如 ChatGPT、Claude 等对话模型）主要提供交互式的问答服务，它们的能力来自于预训练阶段的知识积累，无法在运行过程中自我改进。即使用户与它们进行了大量的交互，这些模型也不会"记住"用户的特定偏好或项目细节，每次对话都需要重新提供上下文。</p>
+<p>而 Hermes Agent 代表了一种全新的范式转变。它不仅仅是一个语言模型的前端界面，更是一个具备<strong>闭环学习能力</strong>的智能系统。它能够：</p>
+<ul>
+<li>在执行任务时主动记录解决方案</li>
+<li>将解决方案抽象为可复用的技能</li>
+<li>在后续任务中应用和优化这些技能</li>
+<li>随着使用时间的增长，变得越来越"了解"特定用户的需求这种区别类似于"工具"与"助手"之间的差异——工具是被动的、一次性的；而助手是主动的、会学习的。Hermes Agent 正是朝着"真正的 AI 助手"这一目标迈出的重要一步。</li>
+</ul>
+<p>编辑于 2026-04-18 11:15・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/2027073177621213204">智能体记忆</a><a href="//www.zhihu.com/topic/23774284">持续学习</a><a href="https://sea.163.com/ua3/zh1/?spu=biz%3D0%26ci%3D3827791%26si%3Ddbc10f7d-b21d-4622-8d86-9022ceb0c7ba%26ts%3D1787662792%26zid%3D1629">失忆船长重铸命运，全员木偶演绎怪诞航海史诗查看详情奥托皮亚联通每片海域，自由、贸易、探险，立即加入《遗忘之海》探索吧！ 查看详情遗忘之海的广告</a></p>
+<hr />
+<p><a id="ch-2"></a></p>
+<h2>📖 Hermes Agent 研究（二）：谁开发了 Hermes</h2>
+<p>Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<hr />
+<h2>第二章 Nous Research 背景与技术团队</h2>
+<h3>2.1 Nous Research 简介</h3>
+<p>Hermes Agent 由 <strong>Nous Research</strong> 开发，这是一家专注于人工智能研究的科技公司。Nous Research 在大语言模型领域有着深厚的技术积累，其产品线包括著名的 Hermes 模型系列、Atropos 强化学习框架，以及最新的 Hermes Agent。</p>
+<p>从公司成立之初，Nous Research 就致力于开发能够真正理解和帮助人类的 AI 系统。与其他追求模型参数规模的公司不同，Nous Research 更注重模型的实用性、智能性和可扩展性。他们的核心理念是：AI 不应该只是一个强大的语言生成器，而应该是一个能够与用户协同工作、持续学习、不断进步的智能伙伴。</p>
+<h3>2.2 Hermes 模型系列</h3>
+<p>Hermes Agent 的名字来源于 Hermes 模型系列，这是 Nous Research 推出的一系列开源大语言模型。Hermes 模型以其出色的指令遵循能力、多语言支持和高效的推理性能而闻名，在开源社区中获得了广泛的应用和好评。</p>
+<p>除了 Hermes 主体模型外，Nous Research 还开发了 Nomos 和 Psyche 等模型，共同构成了完整的模型生态系统。这些模型都遵循开源许可，为开发者提供了丰富的选择。Hermes Agent 正是建立在这个成熟模型基础之上的上层应用，能够充分利用这些模型的强大能力。</p>
+<h3>2.3 Atropos 强化学习框架</h3>
+<p>Nous Research 另一个重要的技术贡献是 <strong>Atropos</strong> 强化学习框架。Atropos 是一个用于优化大语言模型的框架，它能够通过强化学习机制来提升模型的性能和指令遵循能力。Hermes Agent 中的自改进学习循环在某种程度上借鉴了 Atropos 的设计理念——通过奖励机制来鼓励 Agent 采用更好的问题解决方法，并通过迭代优化来持续提升能力。</p>
+<h3>2.4 开源理念与社区贡献</h3>
+<p>Nous Research 一贯坚持开源理念，他们认为 AI 技术的发展应该服务于全人类，而非被少数公司垄断。Hermes Agent 采用 MIT 许可证发布，这意味着任何人都可以自由使用、修改和分发这款软件。这种开源策略不仅促进了技术的传播和改进，也为 Nous Research 赢得了开发者和研究者的广泛支持。</p>
+<p>截至 2026年4月，Hermes Agent 在 GitHub 上已获得超过 22,000 颗星标，成为开源 AI Agent 领域最受欢迎的项目之一。活跃的社区贡献不断推动着项目的发展，包括新功能的添加、性能的优化和文档的完善。</p>
+<hr />
+<p><a id="ch-3"></a></p>
+<h2>📖 Hermes Agent 研究（三）：Hermes 核心架构与设计理念</h2>
+<p>目录收起第三章 核心架构与设计理念3.1 整体架构概述3.2 技术栈选择3.3 ReAct 循环实现3.4 设计理念："与您共同成长"Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>第三章 核心架构与设计理念</h2>
+<h3>3.1 整体架构概述</h3>
+<p><img alt="配图" src="/blog/assets/images/v2-865973e387c84d4dd97c9ed545f49eba_1440w.jpg" />
+Hermes Agent架构Hermes Agent 采用模块化的架构设计，核心组件包括以下几个部分：</p>
+<p><strong>Entry Points（入口层）</strong></p>
+<p><strong>Entry Points（入口层）</strong>：这是整个系统的统一入口集合，负责接收来自不同环境的调用请求，并将其转化为标准化的 Agent 任务。它支持多种接入方式，包括 CLI（命令行）、Gateway（服务网关）和 Python Library（编程调用）。这一层的设计核心是<strong>解耦调用方式与执行逻辑</strong>，让同一个 Agent 可以同时服务于开发者、本地工具链和在线 API。</p>
+<p><strong>AI Agent（智能体核心）</strong></p>
+<p><strong>AI Agent（智能体核心）</strong>：这是整个系统的“大脑中枢”，负责统一调度 Prompt 构建、模型调用和工具执行。它本质上实现了一个<strong>轻量级 Agent Runtime</strong>，通常遵循类似 ReAct 的循环：
+ <strong>思考（Reasoning）→ 决策（Planning）→ 调用工具（Acting）→ 观察结果（Observation）→ 再思考</strong>。
+ 这种结构使它能够处理多步骤任务，而不是一次性生成答案。</p>
+<p><strong>Prompt Builder（提示词构建器）</strong></p>
+<p><strong>Prompt Builder（提示词构建器）</strong>：负责将用户输入、历史对话、工具结果等信息整合为最终发送给模型的 Prompt。它通常包含上下文裁剪、模板拼接和结构化指令生成。</p>
+<ul>
+<li><strong>Compression &amp; Caching（压缩与缓存机制）</strong>：用于解决上下文长度限制问题。常见策略包括摘要压缩、窗口滑动，以及对历史消息进行缓存复用。本质上这是一个“轻量级上下文管理系统”，在效果上类似简化版的 Retrieval-Augmented Generation。 <strong>Provider Resolution（模型路由层）</strong></li>
+</ul>
+<p><strong>Provider Resolution（模型提供方解析 / 路由）</strong>：负责在运行时选择具体调用哪个模型服务（如 OpenAI、Anthropic 等），以及采用哪种 API 形式。</p>
+<ul>
+<li><strong>3 API Modes（3种API模式）</strong>： </li>
+<li>chat_compl.（对话补全）→ 标准对话模型 </li>
+<li>codex_resp.（代码生成）→ 偏代码/结构化输出模型 </li>
+<li>
+<p>anthropic（Anthropic接口）→ Claude 系列模型  这是一个<strong>模型抽象层（Model Abstraction Layer）</strong>，可以实现：</p>
+</li>
+<li>
+<p>多模型切换 </p>
+</li>
+<li>成本优化（便宜模型 vs 高性能模型） </li>
+<li>fallback（失败自动切换） <strong>Tool Dispatch（工具调度器）</strong></li>
+</ul>
+<p><strong>Tool Dispatch（工具调度器）</strong>：负责在模型输出“需要调用工具”时，解析调用意图并执行对应操作。它是连接 LLM 与外部世界的关键桥梁。</p>
+<ul>
+<li><strong>Tool Registry（工具注册中心）</strong>：维护所有可用工具的定义（名称、参数、描述） </li>
+<li>
+<p><strong>47 tools / 19 toolsets</strong>：说明工具是模块化组织的，支持组合调用 这一层本质实现的是：</p>
+</li>
+<li>
+<p>Function Calling（函数调用） </p>
+</li>
+<li>Tool Use（工具使用） </li>
+<li>
+<p>Agent Action Execution（行动执行） 工作流程类似：</p>
+</li>
+<li>
+<p>模型输出 JSON / function call </p>
+</li>
+<li>调度器解析 </li>
+<li>调用后端工具 </li>
+<li>返回结果给模型继续推理 <strong>Session Storage（会话存储）</strong></li>
+</ul>
+<p><strong>Session Storage（会话存储）</strong>：负责持久化 Agent 的运行状态与历史上下文。</p>
+<ul>
+<li>SQLite + FTS5 → 支持<strong>全文检索（Full-Text Search）</strong> </li>
+<li>hermes_state.py → 状态管理 </li>
+<li>
+<p>gateway/session.py → 会话生命周期管理 本质作用：</p>
+</li>
+<li>
+<p>提供“短期记忆”（对话上下文） </p>
+</li>
+<li>支持“检索式记忆”（类似轻量 RAG） </li>
+<li>为多轮推理提供状态基础 这是 Agent 从“无状态 API”进化为“有记忆系统”的关键一步。</li>
+</ul>
+<p><strong>Tool Backends（工具执行层）</strong></p>
+<p><strong>Tool Backends（工具后端系统）</strong>：这是 Agent 真正执行动作的地方，相当于“手和脚”。</p>
+<ul>
+<li>Terminal → 执行系统命令（代码执行、自动化脚本） </li>
+<li>Browser → 浏览器自动化（抓取、点击、登录） </li>
+<li>Web → HTTP API 调用 </li>
+<li>MCP（dynamic）→ 动态工具协议（可扩展工具生态） </li>
+<li>
+<p>File / Vision → 文件处理与多模态能力  设计特点：</p>
+</li>
+<li>
+<p>多后端解耦（不同执行环境隔离） </p>
+</li>
+<li>可扩展（新增工具无需改核心逻辑） </li>
+<li>支持复杂任务（如网页操作、数据抓取、自动化流程） </li>
+</ul>
+<h3>3.2 技术栈选择</h3>
+<p>Hermes Agent 采用 <strong>Python 3.11</strong> 作为主要开发语言，这选择有其深谋远虑的原因。Python 拥有最丰富的 AI 和数据科学生态，包括 PyTorch、TensorFlow、transformers 等主流框架，以及各种 AI Agent 相关的库。选择 Python 使得 Hermes Agent 能够轻松集成这些生态系统的最新进展。</p>
+<p>在数据存储方面，Hermes Agent 使用 <strong>SQLite</strong> 作为主要的数据存储引擎。与传统的关系型数据库不同，SQLite 是一个嵌入式数据库，不需要单独的服务器进程，非常适合自托管的 Agent 应用。Hermes Agent 还使用了 SQLite 的 FTS5（Full-Text Search 5）功能来实现高效的会话搜索。</p>
+<p>配置管理方面，Hermes Agent 使用 <strong>YAML</strong> 格式的配置文件（~/.hermes/config.yaml），相比 JSON 更加易读和易于手动编辑。配置内容涵盖模型选择、API 密钥、通道设置、技能配置等多个方面。</p>
+<h3>3.3 ReAct 循环实现</h3>
+<p>Hermes Agent 内部运行的是经过改进的 <strong>ReAct（Reasoning and Acting）循环</strong>。ReAct 是一种让语言模型在推理过程中结合行动能力的框架，它的核心思想是：模型不仅需要"思考"问题，还需要"行动"来获取信息或执行操作。
+在 Hermes Agent 的实现中，ReAct 循环包含以下步骤：</p>
+<ul>
+<li><strong>观察（Observe）</strong>：获取当前状态的完整信息，包括用户输入、系统状态和可用工具</li>
+<li><strong>推理（Reason）</strong>：分析当前情况，决定下一步应该采取什么行动</li>
+<li><strong>行动（Act）</strong>：执行选定的行动，可能包括调用工具、查询知识库或生成响应</li>
+<li><strong>评估（Evaluate）</strong>：评估行动结果，判断是否需要继续循环或可以返回最终响应这种循环机制使 Hermes Agent 能够处理需要多步骤推理和工具使用的复杂任务，而不仅仅是简单的问答。</li>
+</ul>
+<h3>3.4 设计理念："与您共同成长"</h3>
+<p>Hermes Agent 的设计理念可以概括为"与您共同成长"（The Agent That Grows With You）。这一理念体现在多个层面：</p>
+<p>首先，从技术层面来看，Agent 的能力会随着使用时间的增长而提升。每次执行任务时，它都在学习如何更好地为特定用户服务。这种学习不是一次性完成，而是在持续的交互中不断积累和优化。</p>
+<p>其次，从交互层面来看，Agent 能够记住用户的偏好、工作方式、项目背景等信息，提供越来越个性化的服务。用户无需每次都重复解释相同的信息，Agent 会自动学习和应用这些知识。</p>
+<p>最后，从协作层面来看，Hermes Agent 被设计为一个能够与用户建立长期合作关系的智能助手，而非一次性的工具使用。它理解项目的发展历程，记得解决过的问题，能够在未来的工作中应用这些经验。</p>
+<p>编辑于 2026-04-18 13:35・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/28266286">AI智能体</a><a href="//www.zhihu.com/topic/1928176776040907281">AI智能体架构</a></p>
+<hr />
+<p><a id="ch-4"></a></p>
+<h2>📖 Hermes Agent 研究（四）：自改进学习循环详解</h2>
+<p>目录收起第四章 自改进学习循环详解4.1 什么是自改进学习循环4.2 学习循环的工作流程4.3 技能系统详解4.4 GEPA 框架与自我进化Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>第四章 自改进学习循环详解</h2>
+<p><img alt="配图" src="/blog/assets/images/v2-6507b75dd66150e81b70610887673d7b_1440w.jpg" />
+Hermes Agent自改进学习循环</p>
+<h3>4.1 什么是自改进学习循环</h3>
+<p>自改进学习循环（Self-Improving Learning Loop）是 Hermes Agent 最具创新性的核心特性。传统 AI 系统需要通过重新训练或外部更新来改进能力，而 Hermes Agent 能够在运行过程中从自己的经验中学习，不断优化行为，无需人工干预或重新部署。</p>
+<p>这个机制的工作原理类似于人类的学习过程：当人类完成一个复杂的任务后，会在脑中总结经验教训，提炼出可复用的方法论，并在未来遇到类似问题时应用这些经验。Hermes Agent 通过技术手段实现了类似的认知过程，使得 AI 助手能够真正"积累智慧"。</p>
+<h3>4.2 学习循环的工作流程</h3>
+<p>Hermes Agent 的自改进学习循环包含以下几个关键阶段：</p>
+<p><strong>任务执行阶段</strong>：当用户提出一个任务请求时，Agent 会分析任务的性质和需求，制定执行计划。在执行过程中，Agent 会调用各种工具、访问知识库、生成响应，并记录整个过程的关键信息。这一阶段产生的原始数据是后续学习的基础。</p>
+<p><strong>经验提取阶段</strong>：任务完成后，Agent 会自动分析执行过程，识别出有效的解决方案和可以优化的地方。它会提取任务的关键特征、采用的方法、遇到的挑战以及最终的解决方案，形成结构化的经验记录。</p>
+<p><strong>技能生成阶段</strong>：对于有价值的经验，Agent 会将其抽象为可复用的技能文档。技能文档包含了在特定场景下解决问题的标准化方法，可以被未来类似的任务直接调用。技能生成过程会自动处理抽象和泛化，确保技能的适用范围足够广泛。</p>
+<p><strong>技能应用与优化阶段</strong>：当 Agent 遇到新的任务时，会首先检索已有的技能库，找到可能适用的技能。在应用技能的过程中，Agent 会根据实际效果持续优化这些技能，使其越来越精准和高效。</p>
+<h3>4.3 技能系统详解</h3>
+<p><strong>技能（Skills）</strong> 是 Hermes Agent 自改进机制的核心产物。每个技能本质上是一个结构化的文档，记录了在特定场景下解决问题的方法和步骤。与传统的脚本或代码片段不同，技能更接近于"最佳实践"的表述——它们描述的是"如何思考"而非仅仅"做什么"。</p>
+<p>Hermes Agent 预装了超过 40 个内置技能，涵盖以下领域：</p>
+<ul>
+<li><strong>MLOps</strong>：机器学习运营相关的自动化任务</li>
+<li><strong>GitHub</strong> <strong>工作流</strong>：代码仓库管理和 CI/CD 自动化</li>
+<li><strong>研究工具</strong>：文献搜索、数据分析等研究相关任务</li>
+<li><strong>媒体处理</strong>：图像生成、音视频处理等多媒体任务</li>
+<li><strong>生产力工具</strong>：文档处理、日程管理等日常办公任务用户也可以创建自定义技能，将自己在特定领域的方法论教给 Agent。随着时间推移，Agent 的技能库会不断丰富，成为越来越专业的领域助手。</li>
+</ul>
+<h3>4.4 GEPA 框架与自我进化</h3>
+<p>根据官方信息，Nous Research 还开发了一个名为 <strong>hermes-agent-self-evolution</strong> 的扩展项目，它将 <strong>DSPy</strong>（Declarative Self-improving Python）框架与 <strong>GEPA</strong>（Generalized Experience Pattern Acquisition）技术整合到 Agent 的技能优化管道中。
+这一进阶系统能够实现更加复杂的自我进化能力：它不仅能够从直接经验中学习，还能够分析多个相似任务的模式，提取更高层次的抽象规律，并主动寻找改进现有技能的方法。这意味着 Agent 的学习能力不仅是线性的累加，还能够产生质的飞跃。</p>
+<p>编辑于 2026-04-21 11:24・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/28266286">AI智能体</a><a href="//www.zhihu.com/topic/23777133">Skill</a></p>
+<hr />
+<p><a id="ch-5"></a></p>
+<h2>📖 Hermes Agent 研究（五）：三层记忆系统</h2>
+<p>Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<hr />
+<h2>第五章 三层记忆系统详解</h2>
+<h3>5.1 记忆系统的设计哲学</h3>
+<p>Hermes Agent 的记忆系统是其智能行为的基石。与简单的"记住所有对话"不同，Hermes Agent 采用了一个精心设计的三层记忆架构，每层负责不同类型的记忆功能，相互协作形成完整的记忆能力。</p>
+<p>设计这个系统的核心理念是：<strong>不是所有记忆都应该被同等对待</strong>。有些信息只需要在当前会话中保持，有些需要跨会话持久化，还有些需要被抽象为可复用的技能模式。三层架构正是为了满足这些不同的记忆需求。</p>
+<p><img alt="Image 1" src="/blog/assets/images/v2-f1dec4b305a6a7235e1129fff36bc727_1440w.jpg" /></p>
+<p>Hermes Agent 三层记忆系统</p>
+<h3>5.2 第一层：会话记忆（Session Memory）</h3>
+<p>会话记忆是最短暂的记忆形式，它只存在于当前对话会话期间。当用户开始与 Hermes Agent 对话时，会话记忆会被初始化，记录当前对话的所有消息历史、上下文信息和临时状态。</p>
+<p>会话记忆的主要功能包括：</p>
+<ul>
+<li>维护当前对话的连贯性，确保 Agent 能够理解对话的完整上下文</li>
+<li>保存临时的中间计算结果，供多轮推理过程使用</li>
+<li>跟踪对话状态，包括用户的当前意图、已确认的信息和待确认的细节</li>
+</ul>
+<p>当会话结束时，会话记忆中的内容会被处理：有价值的信息会被提取并传递给持久记忆层，而临时性的内容则会被丢弃。这种设计确保了记忆系统不会无限膨胀，同时保留了重要的信息。</p>
+<h3>5.3 第二层：持久记忆（Persistent Memory）</h3>
+<p>持久记忆是 Hermes Agent 区别于传统 AI 助手的关键创新之一。它负责存储跨会话的重要信息，包括用户的事实性信息（如姓名、公司、项目背景）、偏好设置（如喜好的沟通方式、常用的工具）和项目知识（如项目的技术栈、团队成员、里程碑时间表）。</p>
+<p>持久记忆的存储格式采用 <strong>Markdown</strong>，这是一种人类可读、易于编辑的格式。与二进制数据库不同，用户可以直接查看和编辑存储的记忆内容，这大大增强了透明性和可控性。</p>
+<p>持久记忆的特点包括：</p>
+<ul>
+<li><strong>持久性</strong>：信息会跨会话保存，不会因为会话结束而丢失</li>
+<li><strong>可编辑性</strong>：用户可以手动添加、修改或删除记忆内容</li>
+<li><strong>可追溯性</strong>：每条记忆都记录了来源和创建时间，便于理解和审计</li>
+<li><strong>高效检索</strong>：通过 SQLite FTS5 实现快速搜索，用户可以用自然语言查询相关记忆</li>
+</ul>
+<p>持久记忆的存在使得 Hermes Agent 能够提供真正个性化的服务。它会随着与用户的交互不断积累对用户的了解，提供越来越贴心的响应。</p>
+<h3>5.4 第三层：技能记忆（Skill Memory）</h3>
+<p>技能记忆存储的是 Agent 从任务执行中学习到的解决方案模式，这是自改进学习循环的产物。与前两层记忆存储"事实"不同，技能记忆存储的是"方法"——如何解决特定类型问题的标准化方法论。</p>
+<p>当 Agent 成功完成一个复杂任务后，它会分析任务特征和解决方案，将其抽象为可复用的技能。技能采用结构化的格式存储，包括：</p>
+<ul>
+<li>技能名称和描述</li>
+<li>适用场景的描述</li>
+<li>解决步骤的详细说明</li>
+<li>所需的工具和前提条件</li>
+<li>使用示例和最佳实践</li>
+</ul>
+<p>技能记忆使得 Hermes Agent 能够在相似场景中快速应用已验证的解决方案，避免重复造轮子。随着使用时间的增长，Agent 会积累一个越来越丰富的技能库，成为特定领域的专家。</p>
+<h3>5.5 三层记忆的协同工作</h3>
+<p>三层记忆并非孤立运作，而是形成了一个有机的协作系统。当 Agent 处理用户请求时，它会同时查询三层记忆：</p>
+<ol>
+<li>首先检索技能记忆，找到可能适用的技能</li>
+<li>然后查询持久记忆，获取用户的相关背景信息</li>
+<li>最后查看会话记忆，理解当前对话的完整上下文</li>
+</ol>
+<p>这种协同检索确保 Agent 能够做出最恰当的响应——它既知道用户的历史偏好，又了解当前的需求，还能利用已有的成功经验。三层记忆的协同工作，使得 Hermes Agent 展现出了其他 AI 助手难以企及的智能水平。</p>
+<hr />
+<p><a id="ch-6"></a></p>
+<h2>📖 Hermes Agent 研究（六）：技能系统与工具集成</h2>
+<p>目录收起第六章 技能系统与工具集成6.1 技能系统的架构6.2 预置技能一览6.3 工具集成能力Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>第六章 技能系统与工具集成</h2>
+<h3>6.1 技能系统的架构</h3>
+<p><img alt="配图" src="/blog/assets/images/v2-01c38698acc434d96d70d998b3cd0242_1440w.jpg" />
+技能系统生命周期技能系统是 Hermes Agent 实现自改进能力的核心机制。它的架构设计围绕"可学习、可复用、可优化"三个目标展开。</p>
+<p>技能在系统中的生命周期包括：</p>
+<p><strong>创建阶段</strong>：当 Agent 完成一个任务后，如果检测到这是一个值得记录的解决方案，就会触发技能创建流程。Agent 会分析任务的特征、解决步骤和关键决策，生成结构化的技能文档。创建的技能会经过初步验证，确保其有效性</p>
+<p><strong>存储阶段</strong>：技能以 Markdown 格式存储在专门的技能目录中，支持版本控制和历史追踪。每个技能都有唯一的标识符，便于检索和管理。</p>
+<p><strong>检索阶段</strong>：当新任务到达时，Agent 会分析任务特征，在技能库中进行语义检索，找到可能适用的候选技能。检索算法会考虑任务描述与技能适用场景的匹配程度。</p>
+<p><strong>应用阶段</strong>：找到合适的技能后，Agent 会将其作为任务执行的起点，根据具体情况进行调整后应用。应用过程中会记录实际效果，用于后续的技能优化。</p>
+<p><strong>优化阶段</strong>：技能在使用过程中会持续接收反馈。效果良好的技能会得到强化，存在问题的技能会被标记并逐步优化。</p>
+<h3>6.2 预置技能一览</h3>
+<p>Hermes Agent 预装了超过 40 个内置技能，涵盖了常见的使用场景。这些技能按照功能可以分为以下几类：</p>
+<p><strong>开发运维类技能</strong>：包括 MLOps 自动化、GitHub 工作流配置、Docker 容器管理、CI/CD 流程设置等。这些技能大大降低了 DevOps 工作的复杂度。</p>
+<p><strong>研究分析类技能</strong>：包括文献搜索、数据抓取、报告生成、趋势分析等。对于需要进行研究和分析工作的用户，这些技能提供了强大的自动化支持。</p>
+<p><strong>媒体处理类技能</strong>：包括图像生成（支持多种模型）、视频处理、语音合成等。这些技能使得 Hermes Agent 成为一个全能的媒体工作台。</p>
+<p><strong>生产力类技能</strong>：包括邮件处理、日程管理、文档撰写、任务提醒等日常办公任务的自动化。</p>
+<h3>6.3 工具集成能力</h3>
+<p>除了内置技能，Hermes Agent 还提供了强大的工具集成能力。工具是 Agent 与外部世界交互的接口，可以分为以下几类：</p>
+<p><strong>Web 搜索</strong>：集成搜索引擎能力，可以快速获取最新信息。Agent 可以根据任务需要自动进行搜索，并在结果中提取有价值的内容。</p>
+<p><strong>浏览器自动化</strong>：通过浏览器控制实现复杂的 Web 操作，如填写表单、点击按钮、截图等。这使得 Agent 能够执行需要交互式 Web 界面的任务。</p>
+<p><strong>视觉识别</strong>：支持图像分析，可以理解图片内容、识别文字、检测物体等。这为多模态任务提供了支持。</p>
+<p><strong>图像生成</strong>：集成多种图像生成模型，可以根据描述生成图像。这在创意设计和内容创作场景中特别有用。</p>
+<p><strong>文本转语音</strong>：将文本内容转换为语音输出，方便在不方便阅读的场景中使用。</p>
+<p><strong>多模型推理</strong>：支持同时调用多个不同的语言模型，根据任务特点选择最合适的模型。这种灵活性使得 Agent 能够在不同场景下使用最优的模型。</p>
+<p>6.4 MCP 集成</p>
+<p>Hermes Agent 还支持 <strong>MCP（Model Context Protocol）</strong> 集成。MCP 是一个开放的标准协议，允许 AI 系统与外部工具和服务进行标准化交互。通过 MCP，Hermes Agent 可以连接各种外部服务，扩展其能力边界。
+MCP 集成的优势包括：</p>
+<ul>
+<li><strong>标准化接口</strong>：无需为每个工具单独开发集成代码</li>
+<li><strong>可扩展性</strong>：用户可以方便地添加新的工具和服务</li>
+<li><strong>互操作性</strong>：支持与其他支持 MCP 的系统进行对接发布于 2026-04-19 07:43・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/28266286">AI智能体</a><a href="//www.zhihu.com/topic/23777133">Skill</a></li>
+</ul>
+<hr />
+<p><a id="ch-7"></a></p>
+<h2>📖 Hermes Agent 研究（七）：技能系统与工具集成（实践篇）</h2>
+<p>目录收起第七章 多通道支持与部署方式7.1 多平台消息支持7.2 部署方式详解7.3 自然语言定时任务7.4 隔离子代理Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>第七章 多通道支持与部署方式</h2>
+<h3>7.1 多平台消息支持</h3>
+<p>Hermes Agent 的 messaging gateway 是一个强大的多平台集成模块，它能够同时连接多种消息平台，包括：</p>
+<ul>
+<li><strong>Telegram</strong>：功能丰富的即时通讯应用，支持机器人交互</li>
+<li><strong>Discord</strong>：游戏社区常用的语音和文本平台</li>
+<li><strong>Slack</strong>：企业协作工具，支持频道和直接消息</li>
+<li><strong>WhatsApp</strong>：全球最流行的即时通讯应用之一</li>
+<li><strong>Signal</strong>：注重隐私的通讯应用</li>
+<li><strong>Email</strong>：传统但不可或缺的通讯方式</li>
+<li><strong>CLI</strong>：命令行界面，适合开发者用户这种多平台支持不仅仅是简单的"都能用"，而是实现了真正的<strong>跨平台连续性</strong>。用户可以在 Telegram 开始一个任务，然后切到 Slack 继续，甚至在 Email 中接收任务完成的报告。整个过程是无缝的，Agent 始终保持对话的完整上下文。</li>
+</ul>
+<h3>7.2 部署方式详解</h3>
+<p>Hermes Agent 支持五种不同的部署方式，每种方式都有其特定的适用场景和技术要求：</p>
+<p><strong>本地部署</strong>：直接在用户本地机器上运行。这种方式优点是数据完全保留在本地，隐私性最高；缺点是需要用户自行管理依赖和更新。</p>
+<p><strong>Docker 容器部署</strong>：使用 Docker 容器运行 Agent。这是目前最流行的部署方式，兼顾了便捷性和隔离性。Docker 镜像包含了所有依赖，可以一键启动。</p>
+<p><strong>SSH 远程部署</strong>：通过 SSH 连接到远程服务器运行 Agent。适合需要在服务器环境中运行的场景，可以利用服务器的计算资源。</p>
+<p><strong>Singularity 容器部署</strong>：针对高性能计算环境的部署方式，在科研和大规模计算场景中常用。</p>
+<p><strong>Modal 部署</strong>：云端无服务器部署方式，按需付费，适合偶发使用场景。
+每种部署方式都配备了容器硬化和命名空间隔离，确保在不同环境下的安全性。</p>
+<h3>7.3 自然语言定时任务</h3>
+<p>Hermes Agent 提供了独特的自然语言定时任务（Natural Language Cron）功能。用户可以用自然语言描述想要定期执行的任务，如"每天早上八点给我发送行业新闻摘要"或"每周五下午三点生成周报"，Agent 会自动将其转换为可执行的定时任务。</p>
+<p>这个功能大大降低了自动化任务的门槛，用户无需了解 cron 表达式的语法，只需用日常语言描述需求即可。定时任务通过 gateway 在后台运行，无需人工干预。</p>
+<h3>7.4 隔离子代理</h3>
+<p>Hermes Agent 支持创建<strong>隔离子代理（Isolated Subagents）</strong>，每个子代理拥有独立的对话历史、终端会话和 Python RPC 脚本。这种设计使得：</p>
+<ul>
+<li>可以同时运行多个独立的任务流</li>
+<li>子代理之间的上下文完全隔离，避免相互干扰</li>
+<li>可以为不同目的创建专门的子代理</li>
+<li>实现了零上下文成本的管道处理子代理特别适合需要后台运行长时任务的场景，或者需要同时处理多个独立项目的用户。</li>
+</ul>
+<p>发布于 2026-04-19 07:50・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/28266286">AI智能体</a><a href="//www.zhihu.com/topic/1971633514140119056">多Agent系统</a></p>
+<hr />
+<p><a id="ch-8"></a></p>
+<h2>📖 Hermes Agent 研究（八）：与 OpenClaw 对比分析</h2>
+<p>目录收起第八章 与 OpenClaw 对比分析8.1 为什么要对比8.2 技术栈对比8.3 记忆系统对比8.4 自改进机制对比8.5 部署和使用体验对比Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>第八章 与 OpenClaw 对比分析</h2>
+<h3>8.1 为什么要对比</h3>
+<p>在开源 AI Agent 领域，OpenClaw 和 Hermes Agent 是两个最受关注的项目。它们虽然有相似的目标——让 AI 能够自主执行任务、记住用户偏好、持续提供服务——但在技术实现和设计理念上存在显著差异。对比分析这两个项目，有助于理解当前 AI Agent 技术发展的不同方向，也为用户选择适合自己需求的工具提供参考。</p>
+<h3>8.2 技术栈对比</h3>
+<p>从技术栈的角度来看，两个框架有着明显的差异：</p>
+<p>特性Hermes AgentOpenClaw编程语言Python 3.11Node.js（TypeScript 编译）核心进程AIAgent 对话循环（run_agent.py）Gateway 守护进程状态存储SQLite + MarkdownJSON配置 + SQLite（记忆/任务/流）配置文件~/.hermes/config.yaml~/.openclaw/openclaw.json本地模型任何 OpenAI 兼容端点Ollama（原生 API 集成）Python 在 AI 领域的生态优势使得 Hermes Agent 能够更容易地集成最新的 AI 技术和工具。而 Node.js 的选择则为 OpenClaw 带来了更好的跨平台能力和与现代 Web 技术的兼容性。</p>
+<h3>8.3 记忆系统对比</h3>
+<p>两个框架在记忆系统设计上采用了不同的策略：
+<strong>Hermes Agent 的三层记忆</strong>：会话记忆（当前对话）、持久记忆（跨会话事实）、技能记忆（解决方案模式）。这种设计强调"学习"能力，Agent 不仅能记住事实，还能总结方法。
+<strong>OpenClaw 的记忆系统</strong>：包括短期记忆（daily/*.md）、情景记忆（DREAMS.md）、语义记忆（MEMORY.md）以及独特的 Dreaming 机制。Dreaming 模拟人类睡眠时的记忆整合过程，自动评估和晋升重要记忆。
+两者都实现了跨会话记忆能力，但侧重点不同：Hermes 更强调技能的积累和复用，而 OpenClaw 更注重记忆的长期整合和优化。</p>
+<h3>8.4 自改进机制对比</h3>
+<p>这是两个框架最核心的差异点：
+<strong>Hermes Agent</strong> 的自改进是通过技能系统实现的。Agent 从任务执行中学习，创建可复用的技能文档，并在后续使用中持续优化这些技能。这个过程是完全自动化的，用户无需干预。
+<strong>OpenClaw</strong> 的自改进主要通过 Dreaming 机制实现。系统在后台运行记忆整合流程，评估哪些短期信号值得保留，将其晋升为长期记忆。这个机制更侧重于"记忆优化"而非"技能生成"。
+从效果上看，Hermes Agent 学习到的是"怎么做"（方法论），而 OpenClaw 积累的是"是什么"（知识）。前者更适合需要重复执行类似任务的工作流程，后者更适合需要不断丰富知识库的场景。</p>
+<h3>8.5 部署和使用体验对比</h3>
+<p>从部署和使用的角度来看：
+<strong>Hermes Agent</strong> 更强调"开箱即用"和"学习能力"。有用户评价说："如果你想运行一个能立即工作、从你身上学习、每个会话都变得更聪明而不需要触碰配置文件的 Agent，Hermes Agent 是答案。"
+<strong>OpenClaw</strong> 则更强调"网关控制"和"多代理路由"。它的 Gateway 架构提供了一个中央控制平面，可以管理多个 Agent 和多种通道，适合需要复杂编排的场景。</p>
+<p>8.6 互操作性与未来展望</p>
+<p>值得注意的是，这两个框架目前都支持 <strong>OGP（Open Gateway Protocol）</strong>——一个轻量级的联邦层协议，允许不同框架上的 Agent 交换签名加密验证的消息，而不需要知道对方运行的是什么系统。
+这意味着用户可以：运行 OpenClaw 作为主控 Gateway 管理多 Agent 路由，运行 Hermes 作为学习能力强的 Agent，让两者互相通信并协同工作。这种互操作性为构建更复杂的 AI 系统提供了可能性。</p>
+<p>编辑于 2026-04-19 07:56・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/28266286">AI智能体</a><a href="//www.zhihu.com/topic/1999063153082913027">OpenClaw</a></p>
+<hr />
+<p><a id="ch-9"></a></p>
+<h2>📖 Hermes Agent 研究（九）：社区生态与发展趋势</h2>
+<p>目录收起第九章 社区生态与发展趋势9.1 开源社区现状9.2 生态系统扩展9.3 与 OpenClaw 的生态互补9.4 发展趋势展望全文总结Kevin</p>
+<p>今天，Hermes Agent在github上已经97k星。OpenClaw之外，Hermes Agent为我们提供了另一个Agent设计的范例。</p>
+<p>让AI与我共同成长，这几乎是所有Agent使用者的基础愿望，Hermes Agent的核心理念就是“一个能够与您共同成长的 Agent”</p>
+<h2>第九章 社区生态与发展趋势</h2>
+<h3>9.1 开源社区现状</h3>
+<p>Hermes Agent 在开源社区中获得了惊人的关注度。截至 2026年4月19日，GitHub 仓库已获得超过 99,400 颗星标，这使其成为开源 AI Agent 领域最受欢迎的项目之一。活跃的社区贡献不断推动项目的发展，包括新功能的添加、性能优化和文档完善。
+社区的主要贡献包括：</p>
+<ul>
+<li>第三方技能和工具的共享</li>
+<li>部署脚本和配置模板</li>
+<li>教程和使用案例</li>
+<li>问题报告和修复</li>
+</ul>
+<h3>9.2 生态系统扩展</h3>
+<p>围绕 Hermes Agent，一个丰富的生态系统正在形成：
+<strong>hermes-agent-self-evolution</strong>：自我进化扩展项目，集成更高级的学习能力
+<strong>第三方集成</strong>：各种 MCP 服务的适配器，扩展 Agent 的工具能力
+<strong>主题和 UI 定制</strong>：社区开发的主题和界面增强</p>
+<h3>9.3 与 OpenClaw 的生态互补</h3>
+<p>从技术特性来看，Hermes Agent 和 OpenClaw 形成了有趣的互补关系：</p>
+<ul>
+<li><strong>Hermes 强项</strong>：自改进学习、多模型支持、丰富的预置技能</li>
+<li><strong>OpenClaw 强项</strong>：Gateway 控制平面、多代理路由、通道适配这种互补性使得两个项目可以在同一个系统中协同工作，发挥各自的优势。</li>
+</ul>
+<h3>9.4 发展趋势展望</h3>
+<p>基于当前的发展态势，Hermes Agent 的未来发展可能包括：</p>
+<ul>
+<li><strong>更强大的自我进化能力</strong>：结合更先进的机器学习技术，实现更快速和深入的能力提升</li>
+<li><strong>更丰富的多模态支持</strong>：增强对图像、音频、视频等模态的处理能力</li>
+<li><strong>更深入的行业专业化</strong>：针对特定行业开发专业化技能和工作流</li>
+<li><strong>更广泛的部署选项</strong>：支持更多云平台和边缘计算场景</li>
+</ul>
+<h2>全文总结</h2>
+<p>在当前的 AI Agent 领域，OpenClaw 和 Hermes Agent 代表了两种截然不同的发展方向。简单来说，<strong>OpenClaw 更像一个“能干活的 AI”，而 Hermes 更像一个“会成长的 AI”</strong>。</p>
+<p>OpenClaw 的核心优势在于执行能力。它可以调用终端、浏览器和各种工具，直接帮用户完成实际任务，比如自动化脚本、网页操作或数据处理。本质上，它是一个“AI 执行系统”，强调把语言转化为行动。因此，它非常适合那些希望快速提升效率、让 AI 代替自己完成具体工作的用户。不过，它的局限也很明显：每次任务基本都是从头开始，缺乏持续学习能力。</p>
+<p>相比之下，Hermes 更关注“学习”和“积累”。它通过三层记忆系统（会话记忆、持久记忆和技能记忆）来记录用户信息和任务经验，并通过学习闭环（执行→反思→提炼→复用→优化）不断提升自身能力。尤其是技能系统，可以把一次成功的任务抽象为可复用的方法，让 Agent 在类似场景中越来越高效。因此，Hermes 更适合长期使用，能够逐渐变成一个理解用户、具备经验的智能助手。</p>
+<p>从使用体验来看，OpenClaw 更偏“即时价值”，上手就能看到效果；而 Hermes 更偏“长期复利”，随着使用时间增长，能力会不断增强。</p>
+<p>对于个人用户，如果你的目标是<strong>立刻提升效率、完成任务</strong>，选择 OpenClaw 更合适；如果你更看重<strong>长期积累、个性化和持续进化</strong>，Hermes 会更有价值。更理想的方式其实是结合使用：让 OpenClaw 负责执行，让 Hermes 负责学习，从而形成一个既高效又可持续进化的 AI 系统。</p>
+<p>（Hermes Agent系列-完）</p>
+<p>发布于 2026-04-19 08:09・北京<a href="//www.zhihu.com/topic/2026281760514742234">hermes-agent</a><a href="//www.zhihu.com/topic/28266286">AI智能体</a><a href="//www.zhihu.com/topic/30639237">AI-Agent</a></p>
+  <div id="interact" data-slug="hermes"></div>
+</article>
+</main>
+<footer class="site-footer"><div class="wrap">© 2026 Lnbo 日记本 · 由 X2MD + nginx 驱动</footer>
+<script defer src="/blog/assets/interact.js"></script>
+<script defer src="/blog/assets/enhance.js"></script>
+<script defer src="/blog/assets/ai-ask.js"></script>
+</body>
+</html>
