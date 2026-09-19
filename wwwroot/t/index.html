@@ -303,6 +303,10 @@ window.claimKey=async function(){
   }catch(e){msg('rMsg',e.message)}
 };
 /* ── 并行分片下载 ── */
+/* 内嵌浏览器(微信/QQ等)不支持 Blob 下载,自动降级直链 */
+function inAppBrowser(){
+  var ua=(navigator.userAgent||'').toLowerCase();
+  return /micromessenger|qq\/|qqbrowser|weibo|dingtalk|snssdk|bytedance|baiduboxapp/.test(ua)}
 var recvFiles=[],recvKey='',recvClaim='';
 function getBuf(url){
   return new Promise(function(res,rej){
@@ -316,6 +320,8 @@ window.dlFile=async function(idx){
   var q='key='+recvKey+'&id='+f.id+(recvClaim?'&claim='+recvClaim:'');
   if(f.size>400*1024*1024){location.href=API+'file?'+q;btn.disabled=false;
     msg('rMsg','超过 400MB 走单线程直链下载','ok');return}
+  if(inAppBrowser()){location.href=API+'file?'+q;btn.disabled=false;
+    msg('rMsg','当前是 App 内嵌浏览器,已切单线程直链;右上角…→用系统浏览器打开本页可解锁并行加速','ok');return}
   var bar=document.createElement('div');bar.className='bar';bar.style.flexBasis='100%';
   bar.innerHTML='<i></i>';row.appendChild(bar);var fill=bar.firstChild;
   var W=Math.max(1,+(document.getElementById('workers').value||2));
@@ -335,6 +341,7 @@ window.dlFile=async function(idx){
     var a=document.createElement('a');a.href=url;a.download=f.name;a.click();
     setTimeout(function(){URL.revokeObjectURL(url)},30000);
     btn.textContent='✓ 完成';fill.style.width='100%';
+    msg('rMsg','已下载 ✓「'+f.name+'」已进入浏览器下载列表(手机看通知栏/系统下载管理)','ok');
   }catch(e){
     btn.textContent='⇧ 重试';btn.disabled=false;bar.remove();
     msg('rMsg','下载失败:'+e.message)}
